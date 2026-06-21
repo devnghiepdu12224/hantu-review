@@ -552,3 +552,20 @@ body.light-mode #dictionaryPopupOverlay .dictionary-popup-close { background: rg
     max-width: 74px;
   }
 }
+@media (max-width: 768px) {
+  body.light-mode #vocabTable tbody tr.current-row,
+  body.light-mode #vocabTable tbody tr.active-row,
+  body.light-mode #vocabTable tbody tr.is-current {
+    background: var(--bg-card) !important;
+    border-color: var(--accent-neon) !important;
+    box-shadow: 0 0 0 1px rgba(0, 127, 143, 0.18),
+                0 8px 22px rgba(0, 127, 143, 0.08) !important;
+  }
+
+  body.light-mode #vocabTable tr.current-row td,
+  body.light-mode #vocabTable tr.active-row td,
+  body.light-mode #vocabTable tr.is-current td {
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+}
