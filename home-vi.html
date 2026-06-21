@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Matrix Hanzi Pro - Trang chủ</title>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-H5Z8WV4CPH"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-H5Z8WV4CPH');
+  </script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Noto+Serif+SC:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="home-vi.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+<!-- HOME / DASHBOARD: tách từ #dashboardScreen trong vi.html gốc -->
+<div class="screen active" id="dashboardScreen">
+<div class="dashboard-container">
+<header class="dash-header">
+<div class="brand-zone">
+<h1>Matrix Hanzi Online <span class="neon-text">Pro</span></h1>
+<p>Bạn học rất nhiều từ vựng rồi? - Nhưng nhớ được bao nhiêu?</p>
+<div class="badge free" id="customerNameChip" style="margin-top:12px; display:none;">👤 <span id="customerNameDisplay"></span></div>
+<a class="badge premium" href="./blog/" style="text-decoration:none; display:inline-block; margin-top:12px; font-size:12px;" target="_blank">📖 OUR BLOG HERE ➔</a>
+</div>
+<div style="display:flex; flex-direction: column; gap: 12px; align-items: flex-end;">
+<button class="btn" id="themeToggleBtn">☀️ Chế độ sáng</button>
+<div class="premium-status-box">
+<span class="badge free" id="premiumBadge">Free Account</span>
+<div class="license-activation-zone" id="activationForm">
+<div id="deviceCodeDisplay" style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-right: 8px;">Mã máy: Đang tải...</div>
+<input class="activation-input" id="premiumKeyInput" placeholder="Nhập mã PRE của bạn..." type="text"/>
+<button class="btn btn-primary" id="activatePremiumBtn">Kích hoạt</button>
+</div>
+<button class="btn btn-danger" id="resetPremiumBtn"></button>
+</div>
+</div>
+</header>
+<div class="toolbar-grid">
+<div class="tool-btn active" onclick="openConfigPanel('panel-system', this)">
+<div class="tool-icon">📚</div><div class="tool-name">Thư viện Hệ thống</div>
+</div>
+<div class="tool-btn" onclick="openConfigPanel('panel-link', this)">
+<div class="tool-icon">🔗</div><div class="tool-name">Nhập từ Link</div>
+</div>
+<div class="tool-btn" onclick="openConfigPanel('panel-file', this)">
+<div class="tool-icon">💻</div><div class="tool-name">Tải từ Máy tính</div>
+</div>
+<div class="tool-btn" onclick="openConfigPanel('panel-storage', this)">
+<div class="tool-icon">💾</div><div class="tool-name">Bộ nhớ Cá nhân</div>
+</div>
+</div>
+<div class="config-panel active" id="panel-system">
+<h3>Thư viện từ vựng có sẵn hệ thống</h3>
+<div class="form-group">
+<div class="custom-select-wrapper">
+<select id="presetSelect" style="display:none;"></select>
+<div class="custom-select-trigger" id="customSelectTrigger">
+<span id="customSelectText">Chọn bộ từ vựng</span>
+<span class="custom-select-arrow">▼</span>
+</div>
+<div class="custom-select-dropdown" id="customSelectDropdown"></div>
+</div>
+</div>
+<div style="text-align: right;"><button class="btn btn-primary" id="loadPresetBtn">Kích hoạt bộ từ hệ thống</button></div>
+</div>
+<div class="config-panel" id="panel-link">
+<h3>Nhập liên kết đám mây riêng (.txt / .csv URL)</h3>
+<div class="form-group"><input id="customUrlInput" placeholder="Dán đường dẫn đám mây của bạn tại đây..." type="text"/></div>
+<div style="text-align: right;"><button class="btn" id="loadCustomUrlBtn">Tải từ Cloud riêng</button></div>
+</div>
+<div class="config-panel" id="panel-file">
+<h3>Tải trực tiếp file từ máy tính</h3>
+<div class="form-group">
+<div class="file-dropzone" id="dropZoneContainer">
+<p id="fileDropText">Kéo thả hoặc Click để duyệt file .txt / .csv từ máy của bạn</p>
+<input accept=".txt,.csv" id="fileInput" style="display:none" type="file"/>
+</div>
+</div>
+</div>
+<div class="config-panel" id="panel-storage">
+<h3>Bộ nhớ lưu trữ cá nhân</h3>
+<div class="form-group">
+<button class="btn" id="saveCurrentListBtn" style="width: 100%; margin-bottom: 16px;">Lưu bộ hiện tại vào trình duyệt</button>
+<label>Danh sách các bộ từ đã lưu nội bộ</label>
+<select id="userLibrarySelect" style="margin-bottom: 16px; width: 100%; padding: 12px; border-radius: 12px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color);"></select>
+<div style="display:flex; gap:12px;">
+<button class="btn btn-primary" id="loadUserListBtn" style="flex:1;">Mở danh sách</button>
+<button class="btn btn-danger" id="deleteUserListBtn" style="flex:1;">Xóa danh sách</button>
+</div>
+</div>
+</div>
+<div class="banner-placeholder">
+<img alt="Phương pháp học Hán tự" src="https://raw.githubusercontent.com/devnghiepdu12224/duan_1/f7ff1cf5e1fe88570a378aa10d3f1e406df130fd/ChatGPT%20Image%2017_40_40%2018%20thg%206%2C%202026.png" style="width: 100%; display: block;"/>
+</div>
+<div class="card">
+  <h2>⚙️ Tùy chọn cấu hình chế độ ôn tập</h2>
+  <div class="form-group">
+    <div class="mode-grid">
+      <div class="mode-option-card active" id="optModeNormal" onclick="setVisualMode('normal')">
+        <h4>Mặc định tuần tự</h4><p>Luyện tập theo số thứ tự của danh sách gốc.</p>
+      </div>
+      <div class="mode-option-card" id="optModeRandom" onclick="setVisualMode('random')">
+        <h4>🔀 Xáo trộn Ngẫu nhiên</h4><p>Tráo ngập tràn từ vựng tạo phản xạ bất ngờ.</p>
+      </div>
+      <div class="mode-option-card" id="optModeForgotten" onclick="setVisualMode('forgotten')">
+        <h4>⭐ Tập trung từ đã quên</h4><p>Chỉ lọc hiển thị những từ bạn đã bấm tích dấu sao.</p>
+      </div>
+      <div class="mode-option-card" id="optModeWrong" onclick="setVisualMode('wrong')">
+        <h4>❌ Khắc phục từ gõ sai</h4><p>Tập trung gõ lại những từ vừa gõ sai đáp án.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-subtle);">
+    <label>Phạm vi ôn tập (Áp dụng cho Pro Mode & Workspace)</label>
+    <select id="homeRangeSelect" style="width: 100%; padding: 12px 16px; border-radius: 12px; background: var(--bg-input); color: var(--accent-neon); border: 1px solid var(--border-color); font-weight: 700; cursor: pointer;">
+      <option value="0">Tất cả (Từ STT 1 đến hết)</option>
+    </select>
+    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">* Chọn STT bắt đầu nếu bạn muốn học tiếp từ bài hôm trước.</p>
+  </div>
+
+  <div class="form-group launch-mode-section">
+<div class="launch-mode-kicker">Chọn không gian luyện tập</div>
+<div class="launch-mode-grid">
+<div class="launch-mode-card active" id="launchModeNormal" onclick="setLaunchMode('normal')" role="button" tabindex="0">
+<div class="launch-mode-icon">▦</div>
+<div>
+<h4>Normal Mode</h4>
+<p>Không gian luyện tập dạng bảng hiện tại, phù hợp duyệt và nhập như trang tính.</p>
+</div>
+</div>
+<div class="launch-mode-card" id="launchModePro" onclick="setLaunchMode('pro')" role="button" tabindex="0">
+<div class="launch-mode-icon">✦</div>
+<div>
+<h4>Pro Mode</h4>
+<p>Không gian tập trung nhập tâm, current ở giữa, phản hồi âm thanh và chuyển động mượt.</p>
+</div>
+</div>
+</div>
+</div>
+<div style="text-align: right; margin-top: 28px;">
+<button class="btn btn-accent" id="startPracticeBtn" style="padding: 14px 32px; font-size: 15px;">BẮT ĐẦU LUYỆN GÕ PHẢN XẠ ➔</button>
+</div>
+</div>
+</div>
+</div>
+<!-- GUIDE POPUP: dùng trên Home -->
+<button class="guide-trigger" onclick="toggleGuidePopup()">💡Hướng dẫn</button>
+<div aria-hidden="true" class="guide-popup-wrap" id="guidePopupWrap">
+<div class="guide-popup" id="guidePopupBox">
+<div class="guide-header" id="guideHeader">
+<h4>📌MATRIXHAZI - Ôn tập và rèn luyện hán tự mỗi ngày</h4>
+<button class="guide-close" onclick="toggleGuidePopup()">✖</button>
+</div>
+<div class="guide-body">
+<img alt="Slide" id="guideSlideImg" src=""/>
+</div>
+<div class="guide-footer">
+<button class="guide-btn" id="guidePrevBtn" onclick="changeGuideSlide(-1)">◀ Trước</button>
+<span class="guide-indicator" id="guideIndicator">1 / 3</span>
+<button class="guide-btn" id="guideNextBtn" onclick="changeGuideSlide(1)">Sau ▶</button>
+</div>
+</div>
+</div>
+<!-- Giữ nguyên thứ tự script gốc để không đảo dependency. Nếu JS hiện tại chưa null-safe, cần tách/điều chỉnh JS theo ghi chú. -->
+<script src="js_vi/matrix-core.js"></script><script src="js_vi/matrix-home.js"></script></body>
+</html>

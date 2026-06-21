@@ -50,15 +50,18 @@
       <div id="sourceBadge">SYSTEM</div>
     </div>
     <div id="captionText">Chưa có dữ liệu từ vựng.</div>
-    <div id="queryText">English Keyword: None</div>
+    <div id="queryText">English Keyword / Sentence Scene: None</div>
   </div>
   <script>
     const STORAGE_KEY = 'current_vocab';
-    const CACHE_KEY = 'matrix_image_cache_v3_fast';
-    const CACHE_LIMIT = 1200;
     const PREFETCH_QUEUE_KEY = 'matrix_vocab_prefetch_queue';
     const PREFETCH_CONCURRENCY = 3;
     const PREFETCH_MAX_PER_SIGNAL = 8;
+
+    // Cấu hình cơ sở dữ liệu IndexedDB chuyên dụng
+    const DB_NAME = 'MatrixImageDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'image_cache';
 
     const PIXABAY_API_KEY = '56199982-87b2c1388386109bdb0c1c044';
     const PEXELS_API_KEY = 'e0d69kqmv9olqiHDhvcm4MMOUvy5hBfayPnX5Wx1lV7LQhcGCZ77GRpV';
@@ -73,11 +76,35 @@
     const sourceBadge = document.getElementById('sourceBadge');
     const listenStatus = document.getElementById('listenStatus');
     
-    let currentShowingTextKey = ''; // Theo dõi từ khóa thật đang hiển thị trên màn hình
+    let currentShowingTextKey = ''; 
     let requestSeq = 0;
     let prefetchSeq = 0;
     const memoryCache = new Map();
     const inFlightSearches = new Map();
+    let dbInstance = null;
+
+    // Khởi tạo IndexedDB an toàn bằng Promise
+    function initDB() {
+      return new Promise((resolve) => {
+        if (dbInstance) return resolve(dbInstance);
+        try {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+              db.createObjectStore(STORE_NAME, { keyPath: 'key' });
+            }
+          };
+          request.onsuccess = (e) => {
+            dbInstance = e.target.result;
+            resolve(dbInstance);
+          };
+          request.onerror = () => resolve(null);
+        } catch {
+          resolve(null);
+        }
+      });
+    }
 
     const DIRECT_HANZI_SCENES = {
       '不少': ['many people crowd', 'plenty of items', 'large group scale'],
@@ -110,21 +137,52 @@
     function isMostlyChinese(text) { return /[\u3400-\u9fff]/.test(text || ''); }
     function vocabCacheKey(vocab) { return compactText(`${vocab.han_tu || vocab.hanzi || ''}|${vocab.nghia || vocab.meaning || ''}`); }
 
-    function loadDiskCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch { return {}; } }
-    function getCachedImage(vocab) {
-      const key = vocabCacheKey(vocab); if (memoryCache.has(key)) return memoryCache.get(key);
-      const disk = loadDiskCache(); if (disk[key] && disk[key].url) { memoryCache.set(key, disk[key]); return disk[key]; }
-      return null;
+    // Đọc từ bộ đệm RAM (Memory) trước, nếu không thấy mới truy vấn IndexedDB bất đồng bộ
+    async function getCachedImage(vocab) {
+      const key = vocabCacheKey(vocab); 
+      if (memoryCache.has(key)) return memoryCache.get(key);
+      
+      const db = await initDB();
+      if (!db) return null;
+
+      return new Promise((resolve) => {
+        try {
+          const transaction = db.transaction(STORE_NAME, 'readonly');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.get(key);
+          request.onsuccess = (e) => {
+            const data = e.target.result;
+            if (data) {
+              const value = { url: data.url, source: data.source, query: data.query, score: data.score, t: data.t };
+              memoryCache.set(key, value);
+              resolve(value);
+            } else {
+              resolve(null);
+            }
+          };
+          request.onerror = () => resolve(null);
+        } catch {
+          resolve(null);
+        }
+      });
     }
-    function saveCachedImage(vocab, item) {
-      if (!item || !item.url) return; const key = vocabCacheKey(vocab);
+
+    // Ghi dữ liệu đồng thời vào RAM và bộ nhớ lưu trữ vật lý IndexedDB
+    async function saveCachedImage(vocab, item) {
+      if (!item || !item.url) return; 
+      const key = vocabCacheKey(vocab);
       const value = { url: item.url, source: item.source, query: item.query, score: item.score, t: Date.now() };
+      
       memoryCache.set(key, value);
+      
+      const db = await initDB();
+      if (!db) return;
+
       try {
-        const disk = loadDiskCache(); disk[key] = value;
-        const entries = Object.entries(disk).sort((a, b) => (b[1].t || 0) - (a[1].t || 0)).slice(0, CACHE_LIMIT);
-        localStorage.setItem(CACHE_KEY, JSON.stringify(Object.fromEntries(entries)));
-      } catch {}
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        store.put({ key, ...value });
+      } catch (e) {}
     }
 
     function preloadBrowserImage(url) {
@@ -135,13 +193,18 @@
     }
 
     async function getOrFindBestImage(vocab, { background = false } = {}) {
-      const cached = getCachedImage(vocab); if (cached && cached.url) { if (background) preloadBrowserImage(cached.url); return cached; }
-      const key = vocabCacheKey(vocab); if (inFlightSearches.has(key)) return inFlightSearches.get(key);
+      const cached = await getCachedImage(vocab); 
+      if (cached && cached.url) { if (background) preloadBrowserImage(cached.url); return cached; }
+      
+      const key = vocabCacheKey(vocab); 
+      if (inFlightSearches.has(key)) return inFlightSearches.get(key);
+      
       const job = (async () => {
         const result = await findBestImageFast(vocab); const best = result?.best;
-        if (best && best.url) { saveCachedImage(vocab, best); await preloadBrowserImage(best.url); return best; }
+        if (best && best.url) { await saveCachedImage(vocab, best); await preloadBrowserImage(best.url); return best; }
         return null;
       })().finally(() => inFlightSearches.delete(key));
+      
       inFlightSearches.set(key, job); return job;
     }
 
@@ -172,8 +235,79 @@
     function addQuery(list, seen, q, weight, reason) {
       q = compactText(q); if (!q || q.length <= 2 || seen.has(q)) return; seen.add(q); list.push({ q, weight, reason });
     }
+    function isSentencePayload(vocab) {
+      return !!(vocab && (
+        vocab.searchStrategy === 'example-sentence' ||
+        vocab.contentType === 'example-sentence' ||
+        vocab.type === 'example-sentence' ||
+        vocab.sentence_zh || vocab.sentence_vi || vocab.display_han_tu || vocab.display_nghia ||
+        Array.isArray(vocab.imageFallbackQueries)
+      ));
+    }
+    function getDisplayHanzi(vocab) {
+      return vocab.display_han_tu || vocab.original_han_tu || vocab.sentence_zh || vocab.han_tu || vocab.hanzi || '';
+    }
+    function getDisplayMeaning(vocab) {
+      return vocab.display_nghia || vocab.original_nghia || vocab.sentence_vi || vocab.nghia || vocab.meaning || '';
+    }
+    function removeVietnameseToneForVisual(text) {
+      return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    }
+    function sentenceRuleQueries(vocab) {
+      const rawPool = [
+        vocab.imageQuery,
+        ...(Array.isArray(vocab.imageFallbackQueries) ? vocab.imageFallbackQueries : []),
+        vocab.han_tu, vocab.nghia,
+        vocab.display_han_tu, vocab.display_nghia,
+        vocab.original_han_tu, vocab.original_nghia,
+        vocab.sentence_zh, vocab.sentence_vi
+      ].filter(Boolean).join(' ');
+      const pool = compactText(removeVietnameseToneForVisual(rawPool)).toLowerCase();
+      const has = (...words) => words.some(w => pool.includes(w));
+      const result = [];
+      if ((has('sua', 'milk', '牛奶') && has('uong', 'drink', '喝')) || has('ly sua', 'cup of milk', 'glass of milk')) result.push('glass of milk in the morning', 'person drinking milk', 'milk glass breakfast');
+      if ((has('ca phe', 'cafe', 'coffee', '咖啡') && has('uong', 'drink', '喝')) || has('ly ca phe')) result.push('person drinking coffee', 'cup of coffee on table', 'morning coffee');
+      if ((has('tra', 'tea', '茶') && has('uong', 'drink', '喝')) || has('ly tra')) result.push('person drinking tea', 'Chinese tea cup', 'tea cup on table');
+      if (has('hoc tieng trung', 'hoc trong phong', 'studying chinese', '学习汉语', '学汉语')) result.push('studying Chinese in a room', 'student studying Chinese language', 'Chinese language study desk');
+      else if (has('hoc', 'study', '学习') && has('phong', 'room', '房间')) result.push('studying in a room', 'student study desk room');
+      if (has('cong vien', 'park', '公园')) result.push('people playing in a park', 'family walking in park', 'park outdoor leisure');
+      if (has('xem phim', 'phim', 'movie', '电影')) result.push('watching movie at home', 'person watching movie', 'cinema movie screen');
+      if (has('doc sach', 'sach', 'book', '看书', '书')) result.push('reading a book', 'person reading book', 'study reading book');
+      if (has('nghe nhac', 'nhac', 'music', '音乐')) result.push('listening to music with headphones', 'person listening music');
+      if (has('mua sam', 'shopping', '买东西')) result.push('shopping mall', 'people shopping');
+      if (has('an com', 'bua an', 'eat', 'meal', '吃饭')) result.push('family meal table', 'eating meal at table');
+      if (has('truong hoc', 'school', '学校')) result.push('school classroom', 'students at school');
+      if (has('cong ty', 'office', '公司')) result.push('office workplace', 'business office');
+      if (has('benh vien', 'hospital', '医院')) result.push('hospital building', 'doctor hospital');
+      if (has('san bay', 'airport', '机场')) result.push('airport terminal', 'airport travel');
+      if (has('xe buyt', 'bus', '公共汽车')) result.push('city bus', 'bus stop');
+      if (has('tau hoa', 'train', '火车')) result.push('train station', 'train travel');
+      return [...new Set(result)];
+    }
+    async function buildSentenceSearchQueriesFast(vocab) {
+      const queries = [];
+      const seen = new Set();
+      sentenceRuleQueries(vocab).forEach((q, idx) => addQuery(queries, seen, q, 180 - idx * 8, 'sentence visual rule'));
+      const directQueries = [vocab.imageQuery, ...(Array.isArray(vocab.imageFallbackQueries) ? vocab.imageFallbackQueries : [])].filter(Boolean);
+      directQueries.forEach((q, idx) => {
+        const clean = compactText(removeVietnameseToneForVisual(q));
+        if (clean && !['ly sua', 'sua', 'hoc tieng trung', 'cong vien'].includes(clean)) addQuery(queries, seen, clean, 125 - idx * 5, 'payload sentence query');
+      });
+      const displayMeaning = getDisplayMeaning(vocab);
+      const searchMeaning = vocab.nghia || vocab.meaning || '';
+      const viSource = displayMeaning || searchMeaning;
+      const translated = await translate(viSource, 'vi', 'en', 650);
+      if (translated) {
+        addQuery(queries, seen, translated, 120, 'translated full sentence');
+        addQuery(queries, seen, `${translated} realistic photo`, 105, 'translated sentence realistic');
+      }
+      const compactFallback = compactText(removeVietnameseToneForVisual(searchMeaning || displayMeaning));
+      if (compactFallback) addQuery(queries, seen, `${compactFallback} realistic photo`, 80, 'raw sentence fallback');
+      return queries.slice(0, 12);
+    }
 
     async function buildSearchQueriesFast(vocab) {
+      if (isSentencePayload(vocab)) return buildSentenceSearchQueriesFast(vocab);
       const hanTu = vocab.han_tu || vocab.hanzi || ''; const pinyin = vocab.pinyin || vocab.pin_yin || '';
       const nghia = vocab.nghia || vocab.meaning || ''; const cleanVi = normalizeMeaning(nghia);
       const direct = DIRECT_HANZI_SCENES[hanTu] || []; const queries = []; const seen = new Set();
@@ -261,21 +395,23 @@
     async function renderVocab(vocab) {
       if (!vocab) return;
       const mySeq = ++requestSeq;
-      const hanTu = vocab.han_tu || vocab.hanzi || '';
-      const nghia = vocab.nghia || vocab.meaning || '';
+      const searchHanTu = vocab.han_tu || vocab.hanzi || '';
+      const searchNghia = vocab.nghia || vocab.meaning || '';
+      const hanTu = getDisplayHanzi(vocab);
+      const nghia = getDisplayMeaning(vocab);
       
-      // SỬA LỖI KẸT ẢNH: Tạo chuỗi khóa nội dung thật để đối chiếu, bỏ qua metadata listId lỗi
-      const textKey = compactText(`${hanTu}|${nghia}`);
+      const textKey = compactText(`${searchHanTu}|${searchNghia}`);
       currentShowingTextKey = textKey; 
 
       const stt = vocab.stt ? `STT ${vocab.stt} · ` : '';
       captionText.innerHTML = `${stt}<span class="hanzi">${escapeHtml(hanTu)}</span> · ${escapeHtml(nghia)}`;
 
-      const cached = getCachedImage(vocab);
+      // SỬA LỖI CHÍNH: Thêm từ khóa await để đợi IndexedDB lấy kết quả thật, thay vì nhận một Promise rỗng
+      const cached = await getCachedImage(vocab);
       if (cached && cached.url) {
         if (mySeq !== requestSeq) return;
         listenStatus.textContent = 'LISTENING';
-        displayImageUrl(cached.url, `${cached.source || 'CACHE'} · CACHED`, cached.query, cached.score);
+        displayImageUrl(cached.url, `${cached.source || 'INDEXEDDB'} · CACHED`, cached.query, cached.score);
         return;
       }
 
@@ -287,11 +423,14 @@
       if (mySeq !== requestSeq || currentShowingTextKey !== textKey) return; 
 
       const best = result?.best;
-      if (best && best.url) { saveCachedImage(vocab, best); displayImageUrl(best.url, best.source, best.query, best.score); } 
+      if (best && best.url) { 
+        await saveCachedImage(vocab, best); 
+        displayImageUrl(best.url, best.source, best.query, best.score); 
+      } 
       else {
         imageEl.style.display = 'none'; placeholder.style.display = 'none'; fallbackCard.style.display = 'flex';
         sourceBadge.textContent = 'TEXT FALLBACK'; listenStatus.textContent = 'NO IMAGE FOUND';
-        fallbackHanzi.textContent = hanTu; fallbackMeaning.textContent = nghia; queryText.textContent = 'Không tìm thấy ảnh.';
+        fallbackHanzi.textContent = hanTu; fallbackMeaning.textContent = nghia; queryText.textContent = isSentencePayload(vocab) ? `Không tìm thấy ảnh cho câu. Query cuối: ${escapeHtml(vocab.imageQuery || searchHanTu || '')}` : 'Không tìm thấy ảnh.';
       }
     }
 
@@ -304,7 +443,13 @@
       let cursor = 0;
       async function worker() {
         while (cursor < items.length && seq === prefetchSeq) {
-          const vocab = items[cursor++]; if (!vocab || getCachedImage(vocab)) continue;
+          const vocab = items[cursor++]; 
+          if (!vocab) continue;
+          
+          // SỬA LỖI CHÍNH: Thêm await ở đây để hàm prefetch nhận đúng trạng thái cache thực tế
+          const isCached = await getCachedImage(vocab);
+          if (isCached) continue;
+          
           try { await getOrFindBestImage(vocab, { background: true }); } catch (e) {}
         }
       }
@@ -321,7 +466,12 @@
     });
 
     function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text || ''; return div.innerHTML; }
-    loadCurrentVocab(); loadPrefetchQueue();
+    
+    // Đảm bảo mở kết nối IndexedDB thành công trước khi quét lệnh từ localStorage
+    initDB().then(() => {
+      loadCurrentVocab(); 
+      loadPrefetchQueue();
+    });
   </script>
 </body>
 </html>
