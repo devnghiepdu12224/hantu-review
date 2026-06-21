@@ -370,6 +370,24 @@ body.light-mode #dictionaryPopupOverlay .dictionary-popup-close { background: rg
     max-height: calc(100vh - 84px);
     overflow: auto;
   }
+  
+  /* 1. Reset loại bỏ hoàn toàn mảng màu nền xanh đặc của các ô td bên trong khi ở Mobile Flashcard */
+  #vocabTable tr.current-row td, 
+  #vocabTable tr.active-row td, 
+  #vocabTable tr.is-current td {
+    background: transparent !important; 
+  }
+
+  /* 2. Chỉ tập trung làm sáng đường viền bọc ngoài của Flashcard theo đúng bo góc 18px */
+  #vocabTable tbody tr.current-row,
+  #vocabTable tbody tr.active-row,
+  #vocabTable tbody tr.is-current {
+    outline: none !important; /* Xóa outline vuông mặc định của PC */
+    border-color: var(--accent-neon) !important; /* Tô viền ngoài thành màu Neon Cyan */
+    box-shadow: 0 0 12px var(--accent-neon-dim); /* Thêm hiệu ứng hắt sáng nhẹ quanh viền cho đẹp mắt */
+    background: var(--bg-card) !important; /* Giữ nguyên màu nền tối chuẩn của thẻ card */
+  }
+  
   .mobile-collapse-menu.show { opacity: 1; visibility: visible; pointer-events: auto; }
   .mobile-collapse-menu .btn, .mobile-collapse-menu .range-select-btn { min-height: 46px; justify-content: center; font-size: 12px; }
   .range-select-wrap { grid-column: span 2; width: 100%; }
