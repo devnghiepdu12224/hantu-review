@@ -1,32 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 /*
-  FILE: styles-vi-clean.css
-  CLEANED: 2026-06-21
-  Mục tiêu:
-  - Giữ đầy đủ layout/chức năng đang dùng trong vi.html.
-  - Loại bỏ các block override cũ bị ghi đè, lỗi cú pháp, selector sai và hiệu ứng nặng không còn tác dụng.
-  - Bỏ phần hiển thị Key PRE / form kích hoạt premium trên giao diện.
+================================================================================
+FILE: home-vi.css
+CHỨC NĂNG: 
+- Elite Premium Layout: Purged bloated image guide.
+- Implemented Giant, High-Impact Quizlet Style Configuration Cards.
+- Re-architected pristine, beautiful Light Mode Theme with stark elegant contrast.
+- Compacted layout with action panel shifted below input row, above cards.
+================================================================================
 */
 
-/* =========================
-   1) THEME TOKENS
-========================= */
 :root {
-  --bg-main: #112233;
-  --bg-card: #0b111a;
-  --bg-card-hover: #101824;
-  --bg-input: #121a28;
-  --bg-panel: #0d141f;
-  --border-color: #25415f;
-  --border-subtle: #1a2c42;
+  --bg-main: #04070c;
+  --bg-card: rgba(8, 15, 25, 0.65);
+  --bg-card-strong: rgba(10, 18, 30, 0.88);
+  --bg-input: rgba(14, 23, 38, 0.75);
+  --bg-panel: rgba(11, 19, 31, 0.85);
+  --border-color: rgba(86, 154, 206, 0.22);
+  --border-subtle: rgba(255, 255, 255, 0.08);
 
-  --text-primary: #f0f5ff;
-  --text-secondary: #b7c7d9;
-  --text-muted: #71869c;
+  --text-primary: #f5f8ff;
+  --text-secondary: #9eafc4;
+  --text-muted: #64748b;
 
-  --accent-neon: #22d3ee;
-  --accent-neon-dim: rgba(34, 211, 238, 0.12);
-  --accent-green: #34d399;
-  --accent-green-dim: rgba(52, 211, 153, 0.12);
+  --accent-neon: #18b7ff;
+  --accent-neon-dim: rgba(24, 183, 255, 0.12);
+  --accent-green: #10b981;
+  --accent-green-dim: rgba(16, 185, 129, 0.12);
   --accent-orange: #fbbf24;
   --accent-orange-dim: rgba(251, 191, 36, 0.12);
   --accent-red: #fb7185;
@@ -35,312 +35,1032 @@
   --font-ui: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'DM Mono', monospace;
   --font-hanzi: 'Noto Serif SC', serif;
+  --font-brush: 'Ma Shan Zheng', serif;
 
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 22px;
-  --shadow-card: 0 10px 28px rgba(0, 0, 0, 0.22);
-  --shadow-popup: 0 24px 70px rgba(0, 0, 0, 0.58);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  
+  --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.45);
+  --shadow-popup: 0 24px 70px rgba(0, 0, 0, 0.65);
+  --card-glow: transparent;
 }
 
+/* ============================================================================
+   PRISTINE HIGH-END LIGHT MODE THEME RE-ARCHITECTURE
+============================================================================ */
 body.light-mode {
-  --bg-main: #f3efe6;
-  --bg-card: #fffdf7;
-  --bg-card-hover: #f8f5ec;
-  --bg-input: #fffaf0;
-  --bg-panel: #f8f5ec;
-  --border-color: #ded6c7;
-  --border-subtle: #e8dfd0;
+  --bg-main: #fcfbfa; /* Pure premium soft light porcelain base */
+  --bg-card: rgba(255, 255, 255, 0.92);
+  --bg-card-strong: #ffffff;
+  --bg-input: #f4f3ef;
+  --bg-panel: #f7f6f0;
+  --border-color: rgba(15, 23, 42, 0.12);
+  --border-subtle: rgba(15, 23, 42, 0.06);
 
-  --text-primary: #0f172a;
-  --text-secondary: #5f4a35;
-  --text-muted: #8a735a;
+  --text-primary: #0f172a; /* Stark obsidian primary for rich readability */
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
-  --accent-neon: #007f8f;
-  --accent-neon-dim: rgba(0, 127, 143, 0.10);
-  --accent-green: #059669;
-  --accent-green-dim: rgba(5, 150, 105, 0.10);
+  --accent-neon: #0284c7; /* Vivid oceanic slate blue */
+  --accent-neon-dim: rgba(2, 132, 199, 0.08);
+  --accent-green: #0d9488;
+  --accent-green-dim: rgba(13, 148, 136, 0.08);
   --accent-orange: #ea580c;
-  --accent-orange-dim: rgba(234, 88, 12, 0.10);
-  --accent-red: #dc2626;
-  --accent-red-dim: rgba(220, 38, 38, 0.10);
+  --accent-orange-dim: rgba(234, 88, 12, 0.08);
+  --accent-red: #e11d48;
+  --accent-red-dim: rgba(225, 29, 72, 0.08);
 
-  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.08);
-  --shadow-popup: 0 18px 46px rgba(15, 23, 42, 0.18);
+  --shadow-card: 0 16px 40px rgba(15, 23, 42, 0.06);
+  --shadow-popup: 0 30px 60px rgba(15, 23, 42, 0.12);
+  background: 
+    radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.05), transparent 40%),
+    radial-gradient(circle at 15% 80%, rgba(13, 148, 136, 0.04), transparent 45%),
+    #f8f7f2 !important;
 }
-/* =========================
-   2) BASE
-========================= */
+
+/* ============================================================================
+   BASE WRAPPERS & GATE BACKDROP ENGINE
+============================================================================ */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { min-height: 100%; overflow-x: hidden; }
+
 body {
-  background: var(--bg-main);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(24, 183, 255, 0.08), transparent 34%),
+    radial-gradient(ellipse 70% 45% at 8% 0%, rgba(76, 227, 255, 0.06), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 95% 105%, rgba(211, 72, 62, 0.04), transparent 58%),
+    linear-gradient(135deg, #020409 0%, #060e18 44%, #02050a 100%);
   color: var(--text-primary);
   font-family: var(--font-ui);
-  min-height: 100vh;
-  overflow-y: auto;
   -webkit-font-smoothing: antialiased;
+  isolation: isolate;
 }
-h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); }
-.neon-text { color: var(--accent-neon); }
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: block; }
-.hidden-col { display: none !important; }
-/* =========================
-   3) BUTTONS / INPUTS / BADGES
-========================= */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-size: 13.5px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  white-space: nowrap;
-  outline: none;
-}
-.btn:hover { background: var(--bg-card-hover); border-color: var(--text-muted); }
-.btn-primary { background: var(--accent-green); color: #041017; border-color: transparent; }
-.btn-primary:hover { filter: brightness(0.95); border-color: transparent; }
-.btn-accent { background: var(--accent-neon); color: #041017; border-color: transparent; }
-.btn-accent:hover { filter: brightness(0.95); }
-.btn-danger { background: var(--accent-red-dim); color: var(--accent-red); border-color: rgba(251, 113, 133, 0.28); }
 
-input[type="text"], select {
-  width: 100%;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-  outline: none;
-}
-input[type="text"]:focus, select:focus { border-color: var(--accent-neon); outline: 2px solid var(--accent-neon); outline-offset: -2px; }
-.badge { padding: 4px 12px; border-radius: 8px; font-weight: 800; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
-.badge.free { background: rgba(113, 134, 156, 0.16); color: var(--text-secondary); border: 1px solid var(--border-subtle); }
-.badge.premium { background: rgba(167, 139, 250, 0.15); color: #c084fc; border: 1px solid rgba(167, 139, 250, 0.3); }
-
-/* Bỏ phần Key PRE / kích hoạt premium khỏi giao diện. */
-#activationForm,
-#resetPremiumBtn,
-#deviceCodeDisplay,
-#premiumKeyInput,
-#activatePremiumBtn { display: none !important; }
-.premium-status-box { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-/* =========================
-   4) DASHBOARD
-========================= */
-.dashboard-container { max-width: 1080px; margin: 0 auto; padding: 48px 24px; }
-.dash-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  margin-bottom: 40px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.brand-zone h1 { font-size: 28px; margin-bottom: 8px; }
-.brand-zone p { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
-.toolbar-grid, .mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.toolbar-grid { margin-bottom: 24px; }
-.tool-btn, .mode-option-card, .config-panel, .card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-card);
-}
-.tool-btn { border-radius: 16px; padding: 20px 12px; text-align: center; cursor: pointer; }
-.tool-btn:hover, .mode-option-card:hover { border-color: var(--text-muted); }
-.tool-btn.active, .mode-option-card.active { border-color: var(--accent-green); background: var(--accent-green-dim); }
-.tool-icon { font-size: 28px; margin-bottom: 12px; }
-.tool-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
-.config-panel { display: none; border-radius: 16px; padding: 28px; margin-bottom: 28px; }
-.config-panel.active { display: block; }
-.config-panel h3, .card h2 { border-bottom: 1px solid var(--border-subtle); }
-.config-panel h3 { font-size: 16px; margin-bottom: 20px; padding-bottom: 12px; }
-.card { border-radius: 20px; padding: 32px; margin-bottom: 28px; }
-.card h2 { display: flex; align-items: center; gap: 12px; font-size: 18px; margin-bottom: 24px; padding-bottom: 16px; }
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; margin-bottom: 10px; font-size: 12px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-.file-dropzone { border: 2px dashed var(--border-color); padding: 32px; border-radius: 16px; text-align: center; background: rgba(0,0,0,0.08); cursor: pointer; color: var(--text-secondary); font-size: 14px; }
-.file-dropzone:hover { border-color: var(--accent-neon); background: var(--accent-neon-dim); color: var(--accent-neon); }
-.banner-placeholder { border-radius: 16px; overflow: hidden; margin-bottom: 28px; border: 1px solid var(--border-color); }
-.mode-option-card { padding: 18px 16px; border-radius: 14px; cursor: pointer; }
-.mode-option-card h4 { font-size: 14px; margin-bottom: 6px; }
-.mode-option-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-/* =========================
-   5) CUSTOM SELECT / RANGE MENU
-========================= */
-.custom-select-wrapper, .range-select-wrap { position: relative; width: 100%; user-select: none; }
-.range-select-wrap { display: inline-flex; width: auto; }
-.custom-select-trigger, .range-select-btn { width: 100%; justify-content: space-between; }
-.custom-select-trigger {
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 12px 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.custom-select-trigger.active { border-color: var(--accent-neon); outline: 2px solid var(--accent-neon); outline-offset: -2px; }
-.custom-select-arrow { transition: transform 0.2s; font-size: 12px; }
-.custom-select-trigger.active .custom-select-arrow { transform: rotate(180deg); color: var(--accent-neon); }
-.custom-select-dropdown, .range-select-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  z-index: 9999;
-  display: none;
-  overflow-y: auto;
-  max-height: min(520px, 62vh);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  box-shadow: var(--shadow-popup);
-  padding: 8px 0;
-}
-.custom-select-dropdown { left: 0; width: 100%; }
-.range-select-menu { right: 0; width: 280px; }
-.custom-select-dropdown.show, .custom-select-dropdown.active, .range-select-menu.show, .range-select-menu.active { display: block !important; }
-.custom-select-option, .range-select-option { padding: 12px 20px; color: var(--text-primary); cursor: pointer; font-size: 14px; font-weight: 600; }
-.custom-select-option:hover, .range-select-option:hover { background: var(--bg-card-hover); }
-.custom-select-option.selected { background: var(--accent-neon-dim); color: var(--accent-neon); font-weight: 800; border-left: 3px solid var(--accent-neon); }
-.range-select-option.active { background: var(--accent-green-dim); color: var(--accent-green); border-left: 3px solid var(--accent-green); }
-.custom-select-group-label { padding: 14px 20px 8px; color: var(--text-muted); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; border-top: 1px solid var(--border-subtle); margin-top: 4px; }
-.custom-select-group-label:first-child { border-top: none; margin-top: 0; }
-.range-select-empty { padding: 16px 20px; color: var(--text-muted); font-size: 13px; text-align: center; }
-#panel-system.config-panel.active { overflow: visible; position: relative; z-index: 160; }
-#panel-system .custom-select-wrapper { z-index: 170; }
-#panel-system #customSelectDropdown { z-index: 99999; }
-/* =========================
-   6) GUIDE POPUP
-========================= */
-.guide-trigger {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  z-index: 9000;
-  padding: 12px 20px;
-  border-radius: 99px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  box-shadow: var(--shadow-card);
-}
-.guide-trigger:hover { border-color: var(--accent-neon); color: var(--accent-neon); }
-.guide-popup-wrap {
+body::before {
+  content: "";
   position: fixed;
   inset: 0;
-  z-index: 2147483000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  background: rgba(2, 6, 12, 0.68);
-  backdrop-filter: blur(7px);
+  z-index: -6;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(24,183,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(24,183,255,0.015) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 74%);
 }
-.guide-popup-wrap.active { display: flex; }
-.guide-popup {
-  width: min(920px, 94vw);
-  max-height: min(88dvh, 920px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-popup);
+body.light-mode::before { display: none; }
+
+.gate-art { position: fixed; inset: 0; z-index: -4; overflow: hidden; pointer-events: none; }
+body.light-mode .gate-art { display: none; }
+
+/* Dark mode ambient pieces */
+.moon-ink {
+  position: absolute; top: 8vh; left: 50%; width: min(320px, 25vw); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle at 44% 35%, rgba(255,255,255,0.35), rgba(225,239,255,0.1) 40%, transparent 67%), radial-gradient(circle at 62% 55%, rgba(24,183,255,0.12), transparent 54%);
+  opacity: 0.35; box-shadow: 0 0 90px rgba(24, 183, 255, 0.1);
 }
-.guide-header, .guide-footer { flex: 0 0 auto; background: var(--bg-panel); border-color: var(--border-subtle); }
-.guide-header { padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; cursor: move; user-select: none; }
-.guide-header h4 { margin: 0; font-size: 16px; pointer-events: none; }
-.guide-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 20px; }
-.guide-close:hover { color: var(--accent-red); }
-.guide-body { min-height: 260px; max-height: calc(88dvh - 128px); overflow: auto; background: #02070d; display: flex; align-items: center; justify-content: center; }
-body.light-mode .guide-body { background: #fffaf0; }
-.guide-body img { width: 100%; height: auto; object-fit: contain; display: block; }
-.guide-footer { padding: 16px 24px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
-.guide-btn { background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; }
-.guide-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-.guide-indicator { font-size: 14px; color: var(--text-secondary); font-weight: 800; letter-spacing: 0.1em; }
-/* =========================
-   HOME RESPONSIVE
-========================= */
-@media (max-width: 968px) {
-  .toolbar-grid, .mode-grid { grid-template-columns: repeat(2, 1fr); }
-  .dash-header, .premium-status-box { flex-direction: column; text-align: center; align-items: center; }
+.mist {
+  position: absolute; left: 50%; width: 105vw; height: 180px; transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(225,239,255,0.06), rgba(24,183,255,0.04), transparent); filter: blur(24px); opacity: 0.5; animation: driftMist 20s ease-in-out infinite alternate;
 }
-@media (max-width: 768px) {
-  .dashboard-container { padding: 24px 16px; }
-  .guide-popup { width: 96vw; max-height: 86dvh; }
-  .guide-body { min-height: 220px; max-height: calc(86dvh - 126px); }
+.mist-one { top: 15%; } .mist-two { top: 45%; animation-duration: 26s; animation-direction: alternate-reverse; opacity: 0.3; }
+@keyframes driftMist { from { transform: translateX(-52%) translateY(-5px); } to { transform: translateX(-48%) translateY(8px); } }
+
+.ink-orb { position: absolute; border-radius: 45% 55% 63% 37% / 42% 51% 49% 58%; background: radial-gradient(circle, rgba(24,183,255,0.15), transparent 70%); filter: blur(16px); opacity: 0.4; animation: inkFloat 14s ease-in-out infinite; }
+.orb-one { width: 280px; height: 220px; left: -60px; top: 10%; } .orb-two { width: 260px; height: 300px; right: -70px; bottom: 8%; animation-delay: -6s; }
+@keyframes inkFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
+
+.mountain { position: absolute; left: 50%; bottom: -1px; width: 120vw; min-width: 1000px; height: 35vh; transform: translateX(-50%); opacity: 0.45; }
+.mountain-back { bottom: 4vh; background: linear-gradient(150deg, transparent 0 12%, rgba(214,231,246,0.04) 13% 21%, transparent 22% 100%), linear-gradient(25deg, transparent 0 29%, rgba(159,188,211,0.05) 30% 46%, transparent 47% 100%); clip-path: polygon(0 100%, 0 70%, 9% 62%, 17% 73%, 27% 36%, 38% 70%, 49% 28%, 60% 68%, 71% 40%, 82% 72%, 91% 54%, 100% 74%, 100% 100%); }
+.mountain-front { background: linear-gradient(180deg, rgba(9,19,31,0.1), rgba(4,7,12,0.8)), radial-gradient(ellipse at 50% 20%, rgba(24,183,255,0.05), transparent 55%); clip-path: polygon(0 100%, 0 82%, 10% 74%, 17% 84%, 25% 55%, 35% 84%, 45% 47%, 55% 83%, 64% 58%, 73% 84%, 82% 66%, 91% 84%, 100% 75%, 100% 100%); }
+
+/* ============================================================================
+   CONTAINER & RE-CONFIGURED SaaS ELEMENTS
+============================================================================ */
+.dashboard-container { max-width: 1080px; margin: 0 auto; padding: 40px 24px; }
+
+.dash-header {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;
+  margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);
+}
+.brand-zone { display: flex; flex-direction: column; gap: 4px; }
+.brand-title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.brand-zone h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.035em; }
+.neon-text { color: var(--accent-neon); }
+.brand-slogan { color: var(--text-secondary); font-size: 14.5px; font-weight: 500; }
+.text-link-blog { text-decoration: none; display: inline-block; font-size: 11px; width: fit-content; margin-top: 4px; }
+.header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 22px;
+  border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input);
+  color: var(--text-primary); font-size: 13.5px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter: blur(8px);
+}
+.btn:hover { background: var(--bg-card-strong); border-color: var(--text-primary); transform: translateY(-1px); }
+.btn-primary { background: var(--accent-green); color: #ffffff; border-color: transparent; }
+body.light-mode .btn-primary { color: #ffffff; }
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+/* Compact Master Launch Action Button Re-engineering */
+.btn-massive-accent {
+  width: 100%; max-width: 420px; padding: 14px 32px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--accent-neon) 0%, #0284c7 100%);
+  color: #ffffff; border: none; font-size: 16px; font-weight: 800; letter-spacing: -0.01em;
+  cursor: pointer; box-shadow: 0 8px 24px var(--accent-neon-dim);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden;
+}
+.btn-massive-accent::before {
+  content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: translateX(-100%); transition: transform 0.6s ease;
+}
+.btn-massive-accent:hover {
+  transform: translateY(-2px); box-shadow: 0 14px 35px rgba(24, 183, 255, 0.35); filter: brightness(1.06);
+}
+.btn-massive-accent:hover::before { transform: translateX(100%); }
+
+/* High contrast Light Mode safe rules - preventing whiteout overlay glitch */
+body.light-mode .btn-massive-accent, 
+body.light-mode #startPracticeBtn {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #0284c7 !important;
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.2) !important;
+}
+body.light-mode .btn-massive-accent:hover, 
+body.light-mode #startPracticeBtn:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(2, 132, 199, 0.35) !important;
+  transform: translateY(-2px);
+}
+body.light-mode .btn-massive-accent:active, 
+body.light-mode #startPracticeBtn:active,
+body.light-mode .btn-massive-accent:focus,
+body.light-mode #startPracticeBtn:focus {
+  background: #075985 !important;
+  color: #ffffff !important;
+  outline: none !important;
 }
 
-/* =========================
-   PRO/NORMAL LAUNCH MODE SELECTOR
-========================= */
-.launch-mode-section { margin-top: 24px; }
-.launch-mode-kicker {
-  margin-bottom: 12px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+input[type="text"], select {
+  width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary);
+  padding: 14px 18px; border-radius: var(--radius-sm); font-size: 14.5px; font-family: var(--font-ui);
+  outline: none; transition: border-color 0.2s; font-weight: 600;
 }
-.launch-mode-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+input[type="text"]:focus, select:focus { border-color: var(--accent-neon); }
+body.light-mode input[type="text"], body.light-mode select { background: #ffffff; border-color: rgba(0,0,0,0.15); }
+
+.badge { padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; }
+.badge.free { background: rgba(56, 139, 214, 0.15); color: var(--accent-neon); border: 1px solid var(--border-color); }
+.badge.premium { background: rgba(167, 139, 250, 0.15); color: #c084fc; border: 1px solid rgba(167, 139, 250, 0.3); }
+
+/* ============================================================================
+   CONTROL CENTER BAR (QUIZLET HEADER FLOW)
+============================================================================ */
+.control-center-bar { margin-bottom: 16px; position: relative; z-index: 200; }
+.search-mimic-wrapper {
+  display: flex; background: var(--bg-card-strong); border: 1px solid var(--border-color);
+  padding: 8px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); gap: 12px; align-items: center;
 }
+body.light-mode .search-mimic-wrapper { border-color: rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.03); background: #ffffff; }
+.main-selector-component { flex: 1; }
+
+.custom-select-trigger {
+  background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-primary);
+  padding: 14px 18px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center;
+  justify-content: space-between; font-weight: 600; transition: all 0.2s ease;
+}
+body.light-mode .custom-select-trigger { background: #ffffff; border-color: rgba(0,0,0,0.1); color: #0f172a; }
+.custom-select-trigger:hover { border-color: var(--accent-neon); }
+
+.custom-select-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; width: 100%; z-index: 99999; display: none;
+  overflow-y: auto; max-height: 380px; background: var(--bg-panel); border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-popup); padding: 6px 0; backdrop-filter: blur(20px);
+}
+body.light-mode .custom-select-dropdown { background: #ffffff; border-color: rgba(0,0,0,0.1); }
+.custom-select-dropdown.active, .custom-select-dropdown.show { display: block !important; }
+.custom-select-option { padding: 12px 18px; color: var(--text-primary); cursor: pointer; font-size: 14px; font-weight: 600; }
+.custom-select-option:hover { background: rgba(255,255,255,0.05); }
+body.light-mode .custom-select-option { color: #334155; }
+body.light-mode .custom-select-option:hover { background: #f1f5f9; color: #0f172a; }
+.custom-select-option.selected { background: var(--accent-neon-dim); color: var(--accent-neon); font-weight: 700; border-left: 3px solid var(--accent-neon); }
+.custom-select-group-label { padding: 12px 18px 6px; color: var(--text-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; border-top: 1px solid var(--border-subtle); margin-top: 4px; }
+
+.source-dropdown-wrapper { position: relative; }
+.source-dropdown-trigger { min-height: 48px; background: var(--bg-input); font-weight: 700; }
+body.light-mode .source-dropdown-trigger { background: #ffffff; border-color: rgba(0,0,0,0.1); color: #0f172a; }
+.source-dropdown-trigger.active { border-color: var(--accent-neon); color: var(--accent-neon); }
+
+.source-dropdown-menu {
+  position: absolute; top: calc(100% + 6px); right: 0; width: 230px; background: var(--bg-panel);
+  border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-popup);
+  padding: 6px; display: none; z-index: 9999; backdrop-filter: blur(20px);
+}
+body.light-mode .source-dropdown-menu { background: #ffffff; border-color: rgba(0,0,0,0.1); }
+.source-dropdown-menu.show { display: block; }
+.source-dropdown-menu .tool-btn {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: var(--text-primary);
+  font-size: 13.5px; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; background: transparent;
+  border: none; box-shadow: none; text-align: left; transition: all 0.15s ease;
+}
+body.light-mode .source-dropdown-menu .tool-btn { color: #334155; }
+.source-dropdown-menu .tool-btn:hover { background: rgba(255,255,255,0.05); }
+body.light-mode .source-dropdown-menu .tool-btn:hover { background: #f1f5f9; color: #0f172a; }
+.source-dropdown-menu .tool-btn.active { background: var(--accent-green-dim); color: var(--accent-green); font-weight: 700; }
+
+.panels-display-container { margin-bottom: 16px; position: relative; z-index: 100; }
+.config-panel {
+  display: none; background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-card); backdrop-filter: blur(16px);
+}
+.config-panel.active { display: block; }
+.config-panel h3 { font-size: 14px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 12px; }
+
+.file-dropzone {
+  border: 2px dashed var(--border-color); padding: 24px; border-radius: var(--radius-sm);
+  text-align: center; background: rgba(0,0,0,0.15); cursor: pointer; color: var(--text-secondary); font-size: 13.5px;
+}
+body.light-mode .file-dropzone { background: #faf9f6; border-color: rgba(0,0,0,0.15); color: #475569; }
+
+/* ============================================================================
+   REPOSITIONED & COMPACTED ACTION PANEL (TOP LEVEL)
+============================================================================ */
+.compact-top-panel {
+  background: var(--bg-card-strong); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  padding: 16px 20px; box-shadow: var(--shadow-card); backdrop-filter: blur(16px); margin-bottom: 32px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%;
+}
+body.light-mode .compact-top-panel { background: #ffffff; border-color: rgba(0,0,0,0.06); }
+
+.compact-top-panel .range-selector-block { margin-bottom: 0; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.compact-top-panel .range-selector-block label { font-size: 11px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
+.compact-top-panel .range-selector-block select { padding: 10px 14px; font-size: 13.5px; }
+.compact-top-panel .range-selector-block .helper-text { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.compact-top-panel .action-trigger-row-primary { display: block; width: auto; flex-shrink: 0; }
+
+/* ============================================================================
+   NORMAL VS PRO CARD SPLITTER
+============================================================================ */
+.quizlet-core-section { margin-bottom: 24px; }
+.launch-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .launch-mode-card {
-  display: grid;
-  grid-template-columns: 46px 1fr;
-  gap: 14px;
-  align-items: start;
-  padding: 18px 16px;
-  border-radius: 18px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-card);
-  box-shadow: var(--shadow-card);
-  cursor: pointer;
-  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+  display: flex; gap: 16px; align-items: flex-start; padding: 16px 18px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-color); background: var(--bg-card-strong); box-shadow: var(--shadow-card);
+  cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter: blur(16px);
 }
+body.light-mode .launch-mode-card { background: #ffffff; border-color: rgba(0,0,0,0.08); }
 .launch-mode-card:hover { transform: translateY(-1px); border-color: var(--accent-neon); }
 .launch-mode-card.active {
-  border-color: var(--accent-neon);
-  background: linear-gradient(180deg, var(--accent-neon-dim), var(--bg-card));
-  outline: 2px solid var(--accent-neon-dim);
+  border-color: var(--accent-neon); background: linear-gradient(180deg, var(--accent-neon-dim), var(--bg-card-strong));
 }
+body.light-mode .launch-mode-card.active { background: linear-gradient(180deg, rgba(2, 132, 199, 0.04), #ffffff); border-color: #0284c7; }
 .launch-mode-icon {
-  width: 46px;
-  height: 46px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  color: var(--accent-neon);
-  background: var(--accent-neon-dim);
-  border: 1px solid rgba(34, 211, 238, 0.25);
-  font-size: 22px;
+  width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); color: var(--accent-neon); background: var(--accent-neon-dim);
+  border: 1px solid rgba(24, 183, 255, 0.2); font-size: 20px; font-weight: 900; flex-shrink: 0;
+}
+body.light-mode .launch-mode-icon { color: #0284c7; background: rgba(2, 132, 199, 0.08); }
+.launch-mode-details h4 { font-size: 15px; margin-bottom: 2px; font-weight: 700; }
+.launch-mode-details p { color: var(--text-secondary); font-size: 12.5px; line-height: 1.45; }
+
+/* ============================================================================
+   GIANT HIGH-IMPACT QUIZLET-STYLE CONFIGURATION CARDS ENGINE
+============================================================================ */
+.quizlet-giant-modes-container { margin-bottom: 32px; }
+.quizlet-giant-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+.quizlet-giant-card {
+  background: var(--bg-card-strong); border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); padding: 24px 20px; display: flex; flex-direction: column;
+  justify-content: space-between; min-height: 230px; cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-card);
+  position: relative; overflow: hidden; backdrop-filter: blur(12px);
+}
+body.light-mode .quizlet-giant-card { background: #ffffff; border-color: rgba(0,0,0,0.08); }
+
+.quizlet-giant-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: transparent; }
+
+.quizlet-giant-card.card-mint.active { --card-glow: var(--accent-green); border-color: var(--accent-green); background: linear-gradient(180deg, var(--accent-green-dim), var(--bg-card-strong)); }
+body.light-mode .quizlet-giant-card.card-mint.active { background: linear-gradient(180deg, rgba(13, 148, 136, 0.04), #ffffff); border-color: #0d9488; }
+.quizlet-giant-card.card-mint::before { background: var(--accent-green); }
+
+.quizlet-giant-card.card-blue.active { --card-glow: var(--accent-neon); border-color: var(--accent-neon); background: linear-gradient(180deg, var(--accent-neon-dim), var(--bg-card-strong)); }
+body.light-mode .quizlet-giant-card.card-blue.active { background: linear-gradient(180deg, rgba(2, 132, 199, 0.04), #ffffff); border-color: #0284c7; }
+.quizlet-giant-card.card-blue::before { background: var(--accent-neon); }
+
+.quizlet-giant-card.card-gold.active { --card-glow: var(--accent-orange); border-color: var(--accent-orange); background: linear-gradient(180deg, var(--accent-orange-dim), var(--bg-card-strong)); }
+body.light-mode .quizlet-giant-card.card-gold.active { background: linear-gradient(180deg, rgba(234, 88, 12, 0.04), #ffffff); border-color: #ea580c; }
+.quizlet-giant-card.card-gold::before { background: var(--accent-orange); }
+
+.quizlet-giant-card.card-rose.active { --card-glow: var(--accent-red); border-color: var(--accent-red); background: linear-gradient(180deg, var(--accent-red-dim), var(--bg-card-strong)); }
+body.light-mode .quizlet-giant-card.card-rose.active { background: linear-gradient(180deg, rgba(225, 29, 72, 0.04), #ffffff); border-color: #e11d48; }
+.quizlet-giant-card.card-rose::before { background: var(--accent-red); }
+
+.quizlet-giant-card:hover { transform: translateY(-4px); border-color: var(--text-secondary); }
+.quizlet-giant-card.active { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+body.light-mode .quizlet-giant-card.active { box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06); }
+
+.giant-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.giant-card-number { font-family: var(--font-mono); font-size: 18px; font-weight: 700; opacity: 0.3; }
+.quizlet-giant-card.active .giant-card-number { opacity: 0.8; color: var(--card-glow); }
+.giant-card-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); color: var(--text-secondary); }
+body.light-mode .giant-card-badge { background: rgba(0,0,0,0.05); }
+
+.giant-card-body { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.giant-card-body h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+.giant-card-body p { font-size: 12px; color: var(--text-secondary); line-height: 1.45; }
+
+.giant-card-footer { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; }
+.status-indicator { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+.status-indicator::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); display: inline-block; }
+.quizlet-giant-card.active .status-indicator { color: var(--text-primary); }
+.quizlet-giant-card.active .status-indicator::before { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+
+/* ============================================================================
+   SaaS FOOTER / POPUPS
+============================================================================ */
+.mh-trust-note { max-width: 440px; margin: 32px auto 0; text-align: center; opacity: 0.55; font-size: 11.5px; line-height: 1.5; color: var(--text-secondary); font-weight: 500; }
+.mh-trust-note a { color: var(--accent-neon); text-decoration: none; font-weight: 600; }
+.mh-trust-note a:hover { text-decoration: underline; }
+
+.guide-trigger {
+  position: fixed; bottom: 24px; left: 24px; z-index: 9000; padding: 12px 22px; border-radius: 99px;
+  background: var(--bg-card-strong); border: 1px solid var(--border-color); color: var(--text-primary);
+  font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: var(--shadow-card); backdrop-filter: blur(12px);
+}
+body.light-mode .guide-trigger { border-color: rgba(0,0,0,0.15); box-shadow: 0 8px 24px rgba(0,0,0,0.06); background: #ffffff; color: #0f172a; }
+
+.guide-popup-wrap { position: fixed; inset: 0; z-index: 2147483000; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(2, 5, 10, 0.75); backdrop-filter: blur(8px); }
+.guide-popup-wrap.active { display: flex; }
+.guide-popup { width: min(900px, 94vw); max-height: 86dvh; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); background: var(--bg-card-strong); border: 1px solid var(--border-color); box-shadow: var(--shadow-popup); }
+.guide-header, .guide-footer { flex: 0 0 auto; background: var(--bg-panel); padding: 16px 24px; }
+.guide-header { border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+.guide-header h4 { font-size: 15px; font-weight: 700; }
+.guide-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; }
+.guide-close:hover { color: var(--accent-red); }
+.guide-body { min-height: 240px; max-height: calc(86dvh - 120px); overflow: auto; background: #02050a; display: flex; align-items: center; justify-content: center; }
+body.light-mode .guide-body { background: #fffaf0; }
+.guide-body img { width: 100%; height: auto; object-fit: contain; display: block; }
+.guide-footer { border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+.guide-btn { background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 16px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-size: 13px; }
+.guide-indicator { font-size: 13px; color: var(--text-secondary); font-weight: 700; }
+
+/* Responsive break points */
+@media (max-width: 1024px) {
+  .quizlet-giant-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .compact-top-panel { flex-direction: column; align-items: stretch; gap: 16px; padding: 20px; }
+  .compact-top-panel .action-trigger-row-primary .btn-massive-accent { max-width: 100%; }
+  .launch-mode-grid { grid-template-columns: 1fr; }
+  .dash-header { flex-direction: column; align-items: stretch; gap: 16px; }
+  .header-actions { align-items: flex-start; }
+  .dashboard-container { padding: 20px 16px; }
+}
+@media (max-width: 540px) {
+  .quizlet-giant-grid { grid-template-columns: 1fr; }
+  .search-mimic-wrapper { flex-direction: column; align-items: stretch; }
+  .source-dropdown-trigger { width: 100%; }
+}
+
+/* ============================================================================
+   QUIZLET-LIKE FONT + TYPE SCALE OVERRIDE
+   Mục tiêu:
+   - Đổi toàn bộ UI sang font gần cảm giác Quizlet: Inter + system fallback.
+   - Tăng/giảm cỡ chữ theo thang rõ ràng: title lớn, label nhỏ, body dễ đọc.
+   - Không đổi HTML/JS/id/class, chỉ override typography bằng CSS.
+============================================================================ */
+
+:root {
+  /* Quizlet dùng cảm giác geometric sans; Inter là font public gần nhất và hỗ trợ tiếng Việt tốt. */
+  --font-ui: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Type scale */
+  --fs-hero: clamp(42px, 5vw, 64px);
+  --fs-page-title: clamp(30px, 3vw, 42px);
+  --fs-section-title: clamp(20px, 1.8vw, 26px);
+  --fs-card-title: clamp(17px, 1.25vw, 20px);
+  --fs-body-lg: clamp(16px, 1.35vw, 20px);
+  --fs-body: 15px;
+  --fs-body-sm: 13.5px;
+  --fs-caption: 12px;
+  --fs-chip: 11px;
+
+  --lh-tight: 1.08;
+  --lh-title: 1.18;
+  --lh-body: 1.55;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
+}
+
+body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Header brand */
+.brand-zone h1 {
+  font-size: var(--fs-page-title);
+  line-height: var(--lh-tight);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+}
+
+.brand-slogan {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* Badge / chip / blog link */
+.badge,
+.text-link-blog,
+.giant-card-badge,
+.status-indicator,
+.compact-top-panel .range-selector-block label {
+  font-size: var(--fs-chip);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+/* Buttons + inputs: hơi tròn và đậm kiểu Quizlet */
+.btn,
+.custom-select-trigger,
+.source-dropdown-trigger,
+input[type="text"],
+select {
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+}
+
+.btn-massive-accent {
+  font-size: 17px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.018em;
+}
+
+/* Range panel */
+.compact-top-panel .range-selector-block select {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.compact-top-panel .range-selector-block .helper-text {
+  font-size: var(--fs-caption);
+  line-height: 1.45;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+/* Normal / Pro cards */
+.launch-mode-details h4 {
+  font-size: var(--fs-card-title);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.launch-mode-details p {
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+}
+
+.launch-mode-icon {
+  font-size: 20px;
   font-weight: 900;
 }
-.launch-mode-card h4 { margin: 0 0 6px; font-size: 15px; }
-.launch-mode-card p { margin: 0; color: var(--text-secondary); font-size: 12.5px; line-height: 1.5; }
+
+/* 4 cards chính */
+.giant-card-number {
+  font-family: var(--font-ui);
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.giant-card-body h3 {
+  font-size: var(--fs-card-title);
+  line-height: 1.22;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.giant-card-body p {
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+
+.status-indicator {
+  line-height: 1.2;
+}
+
+/* Dropdown menu */
+.custom-select-option,
+.source-dropdown-menu .tool-btn {
+  font-size: 14.5px;
+  line-height: 1.35;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+}
+
+.custom-select-group-label,
+.config-panel h3 {
+  font-size: var(--fs-chip);
+  line-height: 1.35;
+  font-weight: 850;
+  letter-spacing: 0.015em;
+}
+
+/* Footer + guide */
+.mh-trust-note {
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+.guide-trigger,
+.guide-btn,
+.guide-indicator {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.guide-header h4 {
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+}
+
+/* Desktop lớn: tăng độ giống landing-page Quizlet nếu có khoảng trống */
+@media (min-width: 1025px) {
+  .brand-zone h1 {
+    font-size: clamp(36px, 3.4vw, 46px);
+  }
+
+  .launch-mode-details h4 {
+    font-size: 18px;
+  }
+
+  .giant-card-body h3 {
+    font-size: 20px;
+  }
+
+  .giant-card-body p {
+    font-size: 14.5px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  :root {
+    --fs-page-title: clamp(30px, 5vw, 38px);
+    --fs-card-title: 18px;
+  }
+
+  body {
+    font-size: 14.5px;
+  }
+}
+
+/* Mobile: không để chữ quá to gây vỡ layout */
 @media (max-width: 768px) {
-  .launch-mode-grid { grid-template-columns: 1fr; }
+  :root {
+    --fs-page-title: clamp(28px, 8vw, 34px);
+    --fs-card-title: 17px;
+    --fs-body: 14.5px;
+    --fs-body-sm: 13px;
+    --fs-caption: 11.5px;
+  }
+
+  .brand-zone h1 {
+    letter-spacing: -0.045em;
+  }
+
+  .brand-slogan {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .btn,
+  .custom-select-trigger,
+  .source-dropdown-trigger,
+  input[type="text"],
+  select {
+    font-size: 14.5px;
+  }
+
+  .btn-massive-accent {
+    font-size: 16px;
+  }
+
+  .giant-card-number {
+    font-size: 20px;
+  }
+
+  .giant-card-body p {
+    font-size: 13.5px;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --fs-page-title: clamp(26px, 8.5vw, 31px);
+    --fs-card-title: 16.5px;
+  }
+
+  .badge,
+  .text-link-blog,
+  .giant-card-badge,
+  .status-indicator,
+  .compact-top-panel .range-selector-block label {
+    font-size: 10.5px;
+  }
+
+  .custom-select-trigger,
+  .source-dropdown-trigger {
+    font-size: 14px;
+  }
+}
+/* ============================================================================
+   QUIZLET-SPACIOUS RESPONSIVE OVERRIDE
+   Mục tiêu:
+   - Tăng khoảng thở trên desktop giống cảm giác Quizlet.
+   - Giữ nguyên HTML / JS / logic click, chỉ chỉnh layout, spacing, responsive.
+   - Mobile vẫn gọn, không tràn ngang, các control chuyển thành 1 cột.
+============================================================================ */
+
+:root {
+  --page-max-spacious: 1180px;
+  --space-section-desktop: clamp(28px, 3.2vw, 44px);
+  --space-block-desktop: clamp(20px, 2.2vw, 32px);
+  --space-card-gap: clamp(20px, 2vw, 28px);
+}
+
+/* Page shell: rộng hơn 1080 một chút để card có không gian thở */
+.dashboard-container {
+  width: min(var(--page-max-spacious), calc(100vw - 48px));
+  max-width: var(--page-max-spacious);
+  margin: 0 auto;
+  padding: clamp(44px, 5vw, 64px) 0 72px;
+}
+
+/* Header thoáng hơn, giống phần hero/top area của Quizlet */
+.dash-header {
+  gap: clamp(24px, 3vw, 40px);
+  margin-bottom: var(--space-section-desktop);
+  padding-bottom: clamp(24px, 2.5vw, 32px);
+}
+
+.brand-zone {
+  gap: 8px;
+}
+
+.brand-title-row {
+  gap: 16px;
+}
+
+.brand-zone h1 {
+  font-size: clamp(32px, 3.2vw, 42px);
+  line-height: 1.08;
+}
+
+.brand-slogan {
+  font-size: clamp(14.5px, 1.2vw, 16px);
+  line-height: 1.55;
+  max-width: 620px;
+}
+
+.text-link-blog {
+  margin-top: 6px;
+}
+
+/* Cụm chọn nguồn: tăng chiều cao và khoảng cách để bớt cảm giác bị nén */
+.control-center-bar {
+  margin-bottom: 22px;
+}
+
+.search-mimic-wrapper {
+  gap: 14px;
+  padding: 10px;
+  border-radius: 22px;
+}
+
+.custom-select-trigger {
+  min-height: 54px;
+  padding: 15px 20px;
+  border-radius: 14px;
+}
+
+.source-dropdown-trigger {
+  min-height: 54px;
+  padding-inline: 24px;
+  border-radius: 14px;
+}
+
+.panels-display-container {
+  margin-bottom: 22px;
+}
+
+.config-panel {
+  padding: clamp(22px, 2vw, 28px);
+  border-radius: 22px;
+}
+
+/* Panel phạm vi + CTA: giống một block lớn, rộng rãi, rõ trọng tâm */
+.compact-top-panel {
+  align-items: center;
+  gap: clamp(24px, 3vw, 36px);
+  padding: clamp(22px, 2.4vw, 30px);
+  margin-bottom: clamp(36px, 4vw, 52px);
+  border-radius: 24px;
+}
+
+.compact-top-panel .range-selector-block {
+  gap: 8px;
+}
+
+.compact-top-panel .range-selector-block label {
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.compact-top-panel .range-selector-block select {
+  min-height: 50px;
+  padding: 13px 16px;
+  border-radius: 14px;
+}
+
+.compact-top-panel .range-selector-block .helper-text {
+  margin-top: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.compact-top-panel .action-trigger-row-primary {
+  flex: 0 0 min(280px, 32%);
+}
+
+.btn-massive-accent {
+  max-width: none;
+  min-height: 54px;
+  padding: 15px 28px;
+  border-radius: 14px;
+}
+
+/* Normal / Pro: tách khỏi panel trên và card dưới rõ hơn */
+.quizlet-core-section {
+  margin-bottom: clamp(28px, 3vw, 38px);
+}
+
+.launch-mode-grid {
+  gap: clamp(20px, 2vw, 28px);
+}
+
+.launch-mode-card {
+  min-height: 92px;
+  padding: clamp(20px, 2vw, 24px);
+  border-radius: 22px;
+}
+
+.launch-mode-details h4 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.launch-mode-details p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* 4 card chính: tạo cảm giác gần Quizlet hơn nhờ gap lớn + card cao hơn */
+.quizlet-giant-modes-container {
+  margin-bottom: clamp(44px, 4vw, 60px);
+}
+
+.quizlet-giant-grid {
+  gap: var(--space-card-gap);
+}
+
+.quizlet-giant-card {
+  min-height: clamp(260px, 22vw, 310px);
+  padding: clamp(26px, 2.3vw, 32px) clamp(22px, 2vw, 28px);
+  border-radius: 24px;
+}
+
+.giant-card-header {
+  margin-bottom: 22px;
+}
+
+.giant-card-number {
+  font-size: 20px;
+}
+
+.giant-card-badge {
+  padding: 4px 8px;
+  border-radius: 7px;
+}
+
+.giant-card-body {
+  gap: 10px;
+}
+
+.giant-card-body h3 {
+  font-size: clamp(16px, 1.35vw, 18px);
+  line-height: 1.25;
+}
+
+.giant-card-body p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.giant-card-footer {
+  margin-top: 22px;
+  padding-top: 14px;
+}
+
+.mh-trust-note {
+  margin-top: 48px;
+}
+
+/* Desktop rộng: tránh các card bị ép và tạo nhịp spacing giống landing page */
+@media (min-width: 1200px) {
+  .dashboard-container {
+    width: min(1180px, calc(100vw - 96px));
+  }
+}
+
+/* Tablet: 4 card chuyển 2 cột, gap vẫn đủ thoáng */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    width: min(100% - 40px, 960px);
+    padding-top: 36px;
+  }
+
+  .quizlet-giant-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .quizlet-giant-card {
+    min-height: 230px;
+  }
+}
+
+/* Mobile: ưu tiên dễ thao tác bằng ngón tay, không giữ spacing desktop quá lớn */
+@media (max-width: 768px) {
+  .dashboard-container {
+    width: 100%;
+    padding: 24px 16px 72px;
+  }
+
+  .dash-header {
+    gap: 18px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+  }
+
+  .brand-zone h1 {
+    font-size: clamp(28px, 8vw, 34px);
+  }
+
+  .brand-slogan {
+    font-size: 14px;
+  }
+
+  .header-actions,
+  .header-actions .btn,
+  .theme-toggle-btn {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .control-center-bar {
+    margin-bottom: 16px;
+  }
+
+  .search-mimic-wrapper {
+    gap: 12px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .custom-select-trigger,
+  .source-dropdown-trigger {
+    min-height: 50px;
+    padding: 13px 16px;
+  }
+
+  .compact-top-panel {
+    gap: 18px;
+    padding: 18px;
+    margin-bottom: 28px;
+    border-radius: 20px;
+  }
+
+  .compact-top-panel .action-trigger-row-primary {
+    flex: none;
+    width: 100%;
+  }
+
+  .btn-massive-accent {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  .quizlet-core-section {
+    margin-bottom: 22px;
+  }
+
+  .launch-mode-grid {
+    gap: 14px;
+  }
+
+  .launch-mode-card {
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .quizlet-giant-grid {
+    gap: 16px;
+  }
+
+  .quizlet-giant-card {
+    min-height: 190px;
+    padding: 22px 20px;
+    border-radius: 20px;
+  }
+
+  .giant-card-header {
+    margin-bottom: 16px;
+  }
+
+  .giant-card-footer {
+    margin-top: 16px;
+  }
+
+  .mh-trust-note {
+    margin-top: 32px;
+    padding-inline: 8px;
+  }
+
+  .guide-trigger {
+    left: 16px;
+    bottom: 16px;
+    padding: 10px 16px;
+  }
+}
+
+/* Mobile nhỏ: mọi thứ 1 cột, dropdown không bị lệch khỏi màn hình */
+@media (max-width: 540px) {
+  .dashboard-container {
+    padding-inline: 14px;
+  }
+
+  .search-mimic-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .source-dropdown-wrapper,
+  .source-dropdown-trigger {
+    width: 100%;
+  }
+
+  .source-dropdown-menu {
+    left: 0;
+    right: auto;
+    width: 100%;
+  }
+
+  .quizlet-giant-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quizlet-giant-card {
+    min-height: 178px;
+  }
 }

@@ -1,4 +1,4 @@
-/* Matrix Hanzi Pro - Home Controller (Bản Hợp nhất Chuẩn) */
+/* Matrix Hanzi Pro - Home Controller (Bản sửa lỗi ghi nhớ lựa chọn Dropdown khi quay về trang chủ) */
 (function () {
   'use strict';
   const App = window.MatrixApp;
@@ -32,25 +32,19 @@
     const select = $('homeRangeSelect');
     if (!select) return;
     const total = App.state.masterVocabList.length;
-    select.innerHTML = '<option value="0">Tất cả (Từ STT 1 đến hết)</option>';
+    select.innerHTML = '<option value="0">Tất cả</option>';
     
     if (total > 0) {
       for (let i = 50; i < total; i += 50) {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.textContent = `Bắt đầu từ STT ${i + 1} đến hết`;
+        opt.textContent = `Bắt đầu từ STT ${i + 1}`;
         select.appendChild(opt);
       }
     }
     
-    // Khôi phục UI dropdown an toàn
-    if (App.state.range && App.state.range.start !== undefined) {
-       const startVal = parseInt(App.state.range.start, 10) || 0;
-       if (startVal < total) {
-           select.value = startVal;
-       } else {
-           select.value = 0;
-       }
+    if (App.state.range && App.state.range.start < total) {
+      select.value = App.state.range.start;
     } else {
       select.value = 0;
     }
@@ -60,14 +54,11 @@
     const select = $('homeRangeSelect');
     if(select) {
       on(select, 'change', (e) => {
-        const startVal = parseInt(e.target.value, 10) || 0;
-        App.state.range = { start: startVal, end: null };
-        // Chỉ lưu thuộc tính range thay vì lưu toàn bộ state để tránh lag trình duyệt
-        localStorage.setItem(App.STORAGE_KEYS.range, JSON.stringify(App.state.range));
+        App.state.range = { start: Number(e.target.value), end: null };
+        App.saveState();
       });
     }
   }
-  // ------------------------------
   // ------------------------------
 
   window.openConfigPanel = function openConfigPanel(panelId, btn) {
@@ -102,8 +93,8 @@
     const startBtn = $('startPracticeBtn');
     if (startBtn) {
       startBtn.textContent = selectedLaunchMode === 'pro'
-        ? 'BẮT ĐẦU PRO MODE ✦'
-        : 'BẮT ĐẦU LUYỆN GÕ PHẢN XẠ ➔';
+        ? 'Bắt đầu luyện tập ✦'
+        : 'Bắt đầu luyện tập ▦';
     }
   }
 
@@ -170,6 +161,7 @@
         div.className = 'custom-select-option';
         div.dataset.value = src.id;
         div.textContent = src.name;
+        
         div.addEventListener('click', () => {
           select.value = src.id;
           if (text) text.textContent = src.name;
@@ -177,16 +169,22 @@
           div.classList.add('selected');
           dropdown.classList.remove('show');
           $('customSelectTrigger')?.classList.remove('active');
+          
+          loadPresetSource();
         });
         dropdown.appendChild(div);
       });
     });
-    const first = App.PRESET_SOURCES[0];
-    if (first) {
-      select.value = first.id;
-      if (text) text.textContent = first.name;
-      const firstOption = dropdown.querySelector(`[data-value="${CSS.escape(first.id)}"]`);
-      if (firstOption) firstOption.classList.add('selected');
+
+    // SỬA ĐỔI TẠI ĐÂY: Đọc ID bộ từ vựng đang active từ state thay vì luôn ép lấy bộ số 0
+    const activeSourceId = App.state.currentSourceMeta ? App.state.currentSourceMeta.id : null;
+    const savedSource = App.PRESET_SOURCES.find(x => x.id === activeSourceId) || App.PRESET_SOURCES[0];
+    
+    if (savedSource) {
+      select.value = savedSource.id;
+      if (text) text.textContent = savedSource.name;
+      const matchedOption = dropdown.querySelector(`[data-value="${CSS.escape(savedSource.id)}"]`);
+      if (matchedOption) matchedOption.classList.add('selected');
     }
   }
 
@@ -215,6 +213,27 @@
     }
   }
 
+  async function autoLoadFirstPreset() {
+    const source = App.PRESET_SOURCES[0];
+    if (!source) return;
+    try {
+      setHomeStatus('Đang tự động nạp cấu hình bộ từ mặc định...');
+      const res = await fetch(source.url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const rawText = await res.text();
+      const meta = App.normalizeSourceMeta({ ...source, type: 'preset-url' }, rawText);
+      const list = App.parseVocabulary(rawText, meta);
+      if (!list.length) return;
+      
+      App.setLoadedList(list, meta);
+      updateHomeRangeSelector();
+      setHomeStatus(`Đã nạp sẵn: ${meta.name} (${list.length} mục)`);
+    } catch (err) {
+      console.error('Lỗi nạp tự động:', err);
+      setHomeStatus('Không thể tự động nạp cấu hình hệ thống ban đầu.', true);
+    }
+  }
+
   async function loadPresetSource() {
     const select = $('presetSelect');
     if (!select) return;
@@ -230,10 +249,9 @@
       if (!list.length) throw new Error('File hệ thống không có dữ liệu hợp lệ.');
       
       App.setLoadedList(list, meta);
-      updateHomeRangeSelector(); // Cập nhật danh sách Range sau khi nạp data
+      updateHomeRangeSelector();
       
       setHomeStatus(`Đã nạp: ${meta.name} (${list.length} mục)`);
-      alert(`Đã nạp thành công ${list.length} mục. Bạn có thể bấm BẮT ĐẦU.`);
     } catch (err) {
       console.error(err);
       setHomeStatus('Lỗi tải bộ hệ thống: ' + err.message, true);
@@ -255,7 +273,7 @@
       if (!list.length) throw new Error('Không tìm thấy dữ liệu hợp lệ.');
       
       App.setLoadedList(list, meta);
-      updateHomeRangeSelector(); // Cập nhật Range
+      updateHomeRangeSelector();
       
       setHomeStatus(`Đã nạp Cloud riêng (${list.length} mục)`);
       alert(`Đã nạp thành công ${list.length} mục.`);
@@ -277,7 +295,7 @@
         if (!list.length) throw new Error('File không có dữ liệu hợp lệ.');
         
         App.setLoadedList(list, meta);
-        updateHomeRangeSelector(); // Cập nhật Range
+        updateHomeRangeSelector();
 
         setHomeStatus(`Đã nạp tệp: ${file.name} (${list.length} mục)`);
         alert(`Đã nạp thành công ${list.length} mục từ máy.`);
@@ -324,7 +342,7 @@
     if (!item) return;
     
     App.setLoadedList(item.vocabList || [], { ...(item.sourceMeta || {}), id: item.id, name: item.name, type: 'library' });
-    updateHomeRangeSelector(); // Cập nhật Range
+    updateHomeRangeSelector();
 
     alert(`Đã mở ${item.name}. Bạn có thể bấm BẮT ĐẦU.`);
   }
@@ -340,6 +358,7 @@
   function bindFileDropzone() {
     const input = $('fileInput');
     const zone = $('dropZoneContainer');
+    if (!input || !zone) return;
     on(input, 'change', event => handleFile(event.target.files && event.target.files[0]));
     on(zone, 'click', () => input && input.click());
     on(zone, 'dragover', event => { event.preventDefault(); zone.style.borderColor = 'var(--accent-neon)'; });
@@ -350,13 +369,11 @@
   function startPractice() {
     App.restoreState();
     if (!App.state.masterVocabList.length) return alert('Vui lòng chọn bộ hệ thống, nhập link hoặc tải file từ máy trước.');
-    
-    // Đảm bảo lưu state mới nhất bao gồm Range trước khi chuyển trang
     App.saveState(); 
     window.location.href = selectedLaunchMode === 'pro' ? 'pro-mode.html' : 'workspace-vi.html';
   }
 
-  function initHome() {
+  async function initHome() {
     if (!$('dashboardScreen')) return;
     App.initTheme();
     App.initCustomerName();
@@ -378,15 +395,30 @@
     updateLaunchModeUI();
     bindFileDropzone();
 
-    updateHomeRangeSelector(); // Sinh dropdown lúc mới nạp trang
-    bindHomeRange();           // Lắng nghe thay đổi range
+    updateHomeRangeSelector();
+    bindHomeRange();
     
-    on($('loadPresetBtn'), 'click', loadPresetSource);
-    on($('loadCustomUrlBtn'), 'click', loadCustomUrl);
-    on($('saveCurrentListBtn'), 'click', saveCurrentListToLibrary);
-    on($('loadUserListBtn'), 'click', loadUserListFromLibrary);
-    on($('deleteUserListBtn'), 'click', deleteUserListFromLibrary);
-    on($('startPracticeBtn'), 'click', startPractice);
+    if (!App.state.masterVocabList || App.state.masterVocabList.length === 0) {
+      await autoLoadFirstPreset();
+    }
+    
+    const loadPresetBtn = $('loadPresetBtn');
+    if (loadPresetBtn) on(loadPresetBtn, 'click', loadPresetSource);
+    
+    const loadCustomUrlBtn = $('loadCustomUrlBtn');
+    if (loadCustomUrlBtn) on(loadCustomUrlBtn, 'click', loadCustomUrl);
+    
+    const saveCurrentListBtn = $('saveCurrentListBtn');
+    if (saveCurrentListBtn) on(saveCurrentListBtn, 'click', saveCurrentListToLibrary);
+    
+    const loadUserListBtn = $('loadUserListBtn');
+    if (loadUserListBtn) on(loadUserListBtn, 'click', loadUserListFromLibrary);
+    
+    const deleteUserListBtn = $('deleteUserListBtn');
+    if (deleteUserListBtn) on(deleteUserListBtn, 'click', deleteUserListFromLibrary);
+    
+    const startPracticeBtn = $('startPracticeBtn');
+    if (startPracticeBtn) on(startPracticeBtn, 'click', startPractice);
   }
   
   document.addEventListener('DOMContentLoaded', initHome);

@@ -21,15 +21,15 @@
   };
 
   const PRESET_SOURCES = [
-      { id: 'hsk1-free', name: '500 từ vựng hsk1- Miễn phí đầy đủ', premium: false, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/hsk1_3.0.txt' },
-      { id: 'hsk1(2.0)-free', name: '150 từ vựng hsk1(2.0)- Miễn phí đầy đủ', premium: false, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/150_tuvung(HSK1-2.0).txt' },
-      { id: 'câu ví dụ (test chức năng)', name: '70 câu ví dụ (test chức năng)', premium: false, contentType: 'example-sentence', searchStrategy: 'example-sentence', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/câu-ví-dụ-tham-khao-test.txt' },
-      { id: '500 câu giao tiếp thông dụng', name: '500 câu giao tiếp thông dụng', premium: false, contentType: 'example-sentence', searchStrategy: 'example-sentence', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/hk1_500cau_vi.txt' },
-      { id: 'hsk2-premium', name: '1272 từ vựng hsk2- Bản free full', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/1272_tuvung(HSK2).txt' },
-      { id: 'hsk3-premium', name: '2245 từ vựng hsk3- Bản full', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/2245_tuvung(HSK3).txt' },
-      { id: 'hsk4-premium', name: '3245 từ vựng hsk4- Bản full', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/3245_tuvung(HSK4).txt' },
-      { id: 'hsk5-premium', name: '4316 từ vựng hsk5- Bản full', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/4316_tuvung(HSK5).txt' },
-      { id: 'hsk6-premium', name: '5456 từ vựng hsk6- Bản full', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/5456_tuvung(HSK6).txt' },
+      { id: '1', name: '[HSK1 3.0] 500 từ', premium: false, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/hsk1_3.0.txt' },
+      { id: '2', name: '[HSK1 2.0] 150 từ', premium: false, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/150_tuvung(HSK1-2.0).txt' },
+      { id: '3', name: '70 câu ví dụ', premium: false, contentType: 'example-sentence', searchStrategy: 'example-sentence', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/câu-ví-dụ-tham-khao-test.txt' },
+      { id: '4', name: '500 câu giao tiếp thông dụng', premium: false, contentType: 'example-sentence', searchStrategy: 'example-sentence', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/hk1_500cau_vi.txt' },
+      { id: '5', name: '[HSK2 3.0] 1272 từ', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/1272_tuvung(HSK2).txt' },
+      { id: '6', name: '[HSK3 3.0] 2245 từ', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/2245_tuvung(HSK3).txt' },
+      { id: '7', name: '[HSK4 3.0] 3245 từ', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/3245_tuvung(HSK4).txt' },
+      { id: '8', name: '[HSK5 3.0] 4316 từ', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/4316_tuvung(HSK5).txt' },
+      { id: '9', name: '[HSK6 3.0] 5456 từ', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/5456_tuvung(HSK6).txt' },
       { id: 'van-phong', name: 'Từ vựng Văn phòng', premium: false, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/Văn_phòng.txt' },
       { id: 'giao-tiep-cong-viec', name: 'Giao tiếp công việc', premium: false, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/Giao_tiếp_công_việc.txt' },
       { id: 'khu-cong-nghiep-nha-may', name: 'Khu công nghiệp - nhà máy', premium: true, contentType: 'vocabulary', searchStrategy: 'vocabulary', url: 'https://raw.githubusercontent.com/devnghiepdu12224/my_vocal_list/refs/heads/main/Khu_công_nghiệp_-_nhà_máy.txt' },
@@ -329,7 +329,7 @@
     const display = $('customerNameDisplay');
     if (chip && display) { display.textContent = localStorage.getItem(STORAGE_KEYS.userName); chip.style.display = 'inline-flex'; }
     const badge = $('premiumBadge');
-    if (badge) { badge.textContent = 'Free Account'; badge.className = 'badge free'; }
+    if (badge) { badge.textContent = '🧠 Recall Mode'; badge.className = 'badge free'; }
   }
 
   function compactImageText(text) {

@@ -20,7 +20,7 @@
     if (!status) return;
     const total = App.state.masterVocabList.length;
     const shown = App.state.vocabList.length;
-    status.textContent = total ? `${App.state.currentListName || 'Danh sách'} · Đang học mốc: ${renderedCount}/${shown} (Tổng ${total})` : 'Chưa có danh sách từ vựng';
+    status.textContent = total ? `${App.state.currentListName || 'Danh sách'} · Mốc: ${renderedCount}/${shown}` : 'Chưa có danh sách từ vựng';
   }
 
   // --- RENDER BẢNG: PHIÊN BẢN TỐI ƯU MƯỢT MÀ ---
