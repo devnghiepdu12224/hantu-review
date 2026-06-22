@@ -395,6 +395,80 @@ Mục tiêu:
   }
 }
 
+
+
+/* ============================================================================
+NATIVE SELECT DARK MODE FIX - HOME RANGE SELECT
+Mục tiêu:
+- Fix dropdown native <select id="homeRangeSelect"> bị nền trắng/chữ mờ ở dark mode.
+- Giữ light mode hiện tại không đổi.
+- Áp dụng thêm cho select trong storage panel để nhất quán.
+============================================================================ */
+body:not(.light-mode) select,
+body:not(.light-mode) select option,
+body:not(.light-mode) select optgroup {
+  background-color: #07111f !important;
+  color: #f8fbff !important;
+}
+
+body:not(.light-mode) #homeRangeSelect,
+body:not(.light-mode) #userLibrarySelect,
+body:not(.light-mode) #presetSelect,
+body:not(.light-mode) select {
+  color-scheme: dark;
+  background: #07111f !important;
+  background-color: #07111f !important;
+  color: #f8fbff !important;
+  border-color: rgba(24, 183, 255, 0.36) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 0 1px rgba(24,183,255,0.08) !important;
+}
+
+body:not(.light-mode) #homeRangeSelect:focus,
+body:not(.light-mode) #userLibrarySelect:focus,
+body:not(.light-mode) select:focus {
+  background: #0b1626 !important;
+  background-color: #0b1626 !important;
+  color: #ffffff !important;
+  border-color: #18b7ff !important;
+  box-shadow:
+    0 0 0 3px rgba(24,183,255,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.10) !important;
+}
+
+/* Chromium/Edge thường nhận option:checked tốt hơn option:hover */
+body:not(.light-mode) select option:checked {
+  background: linear-gradient(135deg, #0284c7, #0f766e) !important;
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+body:not(.light-mode) select option:hover,
+body:not(.light-mode) select option:focus {
+  background-color: #0e7490 !important;
+  color: #ffffff !important;
+}
+
+/* Tăng độ đục của khối range panel trong dark mode để popup native không bị glow phía sau làm lóa */
+body:not(.light-mode) .compact-top-panel {
+  background: rgba(8, 16, 30, 0.82) !important;
+}
+
+/* Light mode giữ nền sáng sạch, tránh bị rule dark ảnh hưởng */
+body.light-mode select,
+body.light-mode select option,
+body.light-mode select optgroup {
+  color-scheme: light;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+body.light-mode select option:checked {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
 </style>
 
 </head>
