@@ -370,7 +370,7 @@
     App.restoreState();
     if (!App.state.masterVocabList.length) return alert('Vui lòng chọn bộ hệ thống, nhập link hoặc tải file từ máy trước.');
     App.saveState(); 
-    window.location.href = selectedLaunchMode === 'pro' ? 'pro-mode.html' : 'workspace-vi.html';
+    window.location.href = selectedLaunchMode === 'pro' ? 'pro-mode.html' : 'normal.html';
   }
 
   async function initHome() {
