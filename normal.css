@@ -504,28 +504,38 @@ tr.forgotten-row td:nth-child(3) { color: var(--accent-orange); }
 }
 
 /* ============================================================================
-MOBILE TYPING SCROLL PATCH
-- Tạo vùng đệm thật ở cuối danh sách để input cuối không bị bàn phím che.
-- Kết hợp với JS focus({ preventScroll: true }) + scroll theo typing zone.
+MOBILE TYPING SCROLL PATCH V2
+- Dành cho Android/iOS khi bàn phím ảo mở.
+- Có khoảng đệm thật cuối danh sách, tránh input cuối bị che.
+- Khi card đang focus, trình duyệt có đủ vùng scroll để kéo card xuống nếu input nằm quá cao.
 ============================================================================ */
 @media (max-width: 768px) {
   .table-container {
-    scroll-padding-top: 12px;
-    scroll-padding-bottom: max(220px, 42dvh);
+    scroll-padding-top: 18px;
+    scroll-padding-bottom: max(260px, 48dvh);
+    padding-bottom: calc(max(260px, 48dvh) + env(safe-area-inset-bottom, 0px));
   }
 
   #vocabTable tbody::after {
     content: "";
     display: block;
-    height: max(220px, 42dvh);
+    height: max(260px, 48dvh);
   }
 
   #vocabTable tbody tr {
-    scroll-margin-top: 12px;
-    scroll-margin-bottom: max(220px, 42dvh);
+    scroll-margin-top: 18px;
+    scroll-margin-bottom: max(260px, 48dvh);
+  }
+
+  #vocabTable tbody tr.current-row,
+  #vocabTable tbody tr.active-row,
+  #vocabTable tbody tr.is-current {
+    scroll-margin-top: 24px;
+    scroll-margin-bottom: max(280px, 52dvh);
   }
 
   #vocabTable .answer-input {
     font-size: 16px;
+    touch-action: manipulation;
   }
 }

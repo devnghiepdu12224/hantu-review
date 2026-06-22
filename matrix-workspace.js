@@ -77,7 +77,7 @@
       const input = tr.querySelector('.answer-input');
       const forgot = tr.querySelector('.forgot-checkbox');
       
-      on(input, 'focus', () => markCurrentRow(viewIndex));
+      on(input, 'focus', () => { markCurrentRow(viewIndex); scheduleMobileTypingScroll(input, { reason: 'focus' }); });
       on(input, 'input', () => { item.userAnswer = input.value; App.saveAnswer(item.rawIndex, input.value); checkOne(tr, item); saveStateDebounced(); });
       on(input, 'keydown', event => handleInputKeydown(event, viewIndex));
       on(forgot, 'change', () => { item.forgotten = forgot.checked; tr.classList.toggle('forgotten-row', item.forgotten); App.setForgotten(item.rawIndex, item.forgotten); });
@@ -115,8 +115,7 @@
   }
 
   function handleInputKeydown(event, viewIndex) {
-    // Khi dùng bàn phím Pinyin/IME, Enter có thể là phím xác nhận candidate.
-    // Không chuyển dòng nếu trình duyệt đang composition.
+    // Khi dùng Pinyin/IME, Enter có thể là phím xác nhận candidate, không nên nhảy dòng.
     if (event.isComposing || event.keyCode === 229) return;
 
     if (event.key === 'Enter' || event.key === 'ArrowDown') {
@@ -135,37 +134,78 @@
     return window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
   }
 
-  function scrollInputIntoTypingZone(input) {
-    if (!input) return;
+  function scrollInputIntoTypingZone(input, options = {}) {
+    if (!input || !isMobileViewport()) return;
+
     const container = input.closest('.table-container') || document.querySelector('.table-container');
     const row = input.closest('tr');
     if (!container || !row) return;
 
     const containerRect = container.getBoundingClientRect();
     const inputRect = input.getBoundingClientRect();
-    const visualBottom = window.visualViewport
-      ? Math.min(containerRect.bottom, window.visualViewport.offsetTop + window.visualViewport.height)
-      : containerRect.bottom;
+    const rowRect = row.getBoundingClientRect();
 
-    const visibleTop = containerRect.top + 10;
-    const visibleBottom = visualBottom - 14;
+    const viewportTop = window.visualViewport ? window.visualViewport.offsetTop : 0;
+    const viewportBottom = window.visualViewport
+      ? window.visualViewport.offsetTop + window.visualViewport.height
+      : window.innerHeight;
+
+    const visibleTop = Math.max(containerRect.top, viewportTop) + 10;
+    const visibleBottom = Math.min(containerRect.bottom, viewportBottom) - 14;
     const visibleHeight = Math.max(120, visibleBottom - visibleTop);
-    const targetInputTop = visibleTop + visibleHeight * 0.52;
-    const delta = inputRect.top - targetInputTop;
+
+    // Safe-zone: chỉ chỉnh khi input bị quá sát mép trên hoặc sát bàn phím.
+    // Nếu input ở nửa dưới và đang ổn, không kéo quá mức nữa.
+    const safeTop = visibleTop + Math.min(96, visibleHeight * 0.24);
+    const safeBottom = visibleBottom - Math.min(28, visibleHeight * 0.08);
+    const targetInputTop = visibleTop + visibleHeight * 0.42;
+
+    let delta = 0;
+
+    if (inputRect.top < safeTop) {
+      delta = inputRect.top - targetInputTop;
+    } else if (inputRect.bottom > safeBottom) {
+      delta = inputRect.bottom - safeBottom + 12;
+    } else if (options.forceCenter) {
+      delta = inputRect.top - targetInputTop;
+    }
+
+    if (rowRect.top < visibleTop + 6) {
+      delta = Math.min(delta, rowRect.top - (visibleTop + 12));
+    }
 
     if (Math.abs(delta) > 2) container.scrollTop += delta;
   }
 
-  function scheduleMobileTypingScroll(input) {
+  function clearMobileTypingScrollTimers() {
+    if (mobileTypingScrollTimer) clearTimeout(mobileTypingScrollTimer);
+    mobileTypingScrollTimer = null;
+    mobileTypingScrollTimers.forEach(id => clearTimeout(id));
+    mobileTypingScrollTimers = [];
+  }
+
+  function scheduleMobileTypingScroll(input, options = {}) {
     if (!isMobileViewport() || !input) return;
-    const run = () => scrollInputIntoTypingZone(input);
+    clearMobileTypingScrollTimers();
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(run);
+    const run = () => scrollInputIntoTypingZone(input, options);
+
+    // Android Chrome cập nhật visualViewport theo nhiều nhịp sau khi bàn phím mở.
+    requestAnimationFrame(() => requestAnimationFrame(run));
+    [90, 180, 320, 520].forEach(delay => {
+      mobileTypingScrollTimers.push(setTimeout(run, delay));
     });
+    mobileTypingScrollTimer = setTimeout(run, 760);
+  }
 
-    clearTimeout(mobileTypingScrollTimer);
-    mobileTypingScrollTimer = setTimeout(run, 140);
+  if (window.visualViewport && !window.__matrixTypingViewportListener) {
+    window.__matrixTypingViewportListener = true;
+    window.visualViewport.addEventListener('resize', () => {
+      const active = document.activeElement;
+      if (active?.classList?.contains('answer-input')) {
+        scheduleMobileTypingScroll(active, { reason: 'viewport-resize' });
+      }
+    }, { passive: true });
   }
 
   function focusInput(index) {
@@ -190,7 +230,7 @@
       } catch {
         next.focus();
       }
-      scheduleMobileTypingScroll(next);
+      scheduleMobileTypingScroll(next, { reason: 'enter' });
       return;
     }
 
