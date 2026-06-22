@@ -502,3 +502,30 @@ tr.forgotten-row td:nth-child(3) { color: var(--accent-orange); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* ============================================================================
+MOBILE TYPING SCROLL PATCH
+- Tạo vùng đệm thật ở cuối danh sách để input cuối không bị bàn phím che.
+- Kết hợp với JS focus({ preventScroll: true }) + scroll theo typing zone.
+============================================================================ */
+@media (max-width: 768px) {
+  .table-container {
+    scroll-padding-top: 12px;
+    scroll-padding-bottom: max(220px, 42dvh);
+  }
+
+  #vocabTable tbody::after {
+    content: "";
+    display: block;
+    height: max(220px, 42dvh);
+  }
+
+  #vocabTable tbody tr {
+    scroll-margin-top: 12px;
+    scroll-margin-bottom: max(220px, 42dvh);
+  }
+
+  #vocabTable .answer-input {
+    font-size: 16px;
+  }
+}
