@@ -295,6 +295,106 @@ body.light-mode .giant-card-footer { border-top-color: rgba(15,23,42,.08); }
   .ink-mountain { min-width: 820px; height: 28vh; }
   .guide-trigger { left: 16px; bottom: 16px; padding: 10px 16px; }
 }
+
+
+/* ============================================================================
+DROPDOWN CLIPPING FIX - HOME/INDEX
+Mục tiêu:
+- Dropdown thư viện và dropdown nguồn từ vựng không bị cắt chiều cao bởi glass wrapper.
+- Giữ hiệu ứng glass/card hiện tại nhưng cho phép menu absolute bung ra ngoài.
+============================================================================ */
+.control-center-bar,
+.search-mimic-wrapper,
+.main-selector-component,
+.custom-select-wrapper,
+.source-dropdown-wrapper {
+  overflow: visible !important;
+}
+
+/* search-mimic-wrapper đang chứa dropdown nên không được overflow:hidden */
+.search-mimic-wrapper {
+  position: relative !important;
+  z-index: 5000 !important;
+  overflow: visible !important;
+}
+
+/* Các phần tử cần hiệu ứng shine vẫn có thể hidden, nhưng wrapper chứa dropdown thì không */
+.compact-top-panel,
+.config-panel {
+  overflow: visible !important;
+}
+
+/* Đưa dropdown lên layer cao hơn toàn bộ card/panel phía dưới */
+.custom-select-wrapper {
+  position: relative !important;
+  z-index: 7000 !important;
+}
+
+.custom-select-dropdown {
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  left: 0 !important;
+  right: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-height: min(460px, 68vh) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 999999 !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+}
+
+.source-dropdown-wrapper {
+  position: relative !important;
+  z-index: 7000 !important;
+}
+
+.source-dropdown-menu {
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  right: 0 !important;
+  width: min(280px, calc(100vw - 32px)) !important;
+  max-height: min(420px, 68vh) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 999999 !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+}
+
+/* Khi dropdown mở, đảm bảo thanh control nổi trên panel bên dưới */
+.control-center-bar:has(.custom-select-dropdown.active),
+.control-center-bar:has(.custom-select-dropdown.show),
+.control-center-bar:has(.source-dropdown-menu.show) {
+  z-index: 999998 !important;
+}
+
+/* Fallback cho trình duyệt không hỗ trợ :has() */
+.custom-select-dropdown.active,
+.custom-select-dropdown.show,
+.source-dropdown-menu.show {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Mobile: dropdown bung dạng panel theo màn hình, không bị hẹp/cắt */
+@media (max-width: 768px) {
+  .custom-select-dropdown {
+    max-height: min(520px, 72dvh) !important;
+  }
+
+  .source-dropdown-menu {
+    left: 0 !important;
+    right: auto !important;
+    width: 100% !important;
+    max-height: min(420px, 70dvh) !important;
+  }
+}
+
 </style>
 
 </head>
