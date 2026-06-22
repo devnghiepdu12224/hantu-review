@@ -62,7 +62,7 @@
 
   function goHome(){
     stopMusic();
-    location.href = 'home-vi.html';
+    location.href = 'index.html';
   }
 
   function loadQueue(){

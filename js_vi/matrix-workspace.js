@@ -366,7 +366,7 @@
     
     if (App.state.vocabList.length) setTimeout(() => markCurrentRow(0), 80);
     
-    on($('backToDashBtn'), 'click', () => { stopReadAll(); window.location.href = 'home-vi.html'; });
+    on($('backToDashBtn'), 'click', () => { stopReadAll(); window.location.href = 'index.html'; });
     on($('clearBtn'), 'click', clearAnswers); 
     on($('readAllBtn'), 'click', readAll); 
     on($('openImageDisplayBtn'), 'click', openImageModal); 
